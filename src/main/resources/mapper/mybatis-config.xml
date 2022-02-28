@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="SLF4J"/>
+        <!-- 使全局的映射器启用或禁用缓存。 -->
+        <setting name="cacheEnabled" value="true"/>
+        <!-- 查询时，关闭关联对象即时加载以提高性能 全局性设置懒加载 如果设为‘false'，则所有相关联的都会被初始化加载。 -->
+        <setting name="lazyLoadingEnabled" value="false" />
+        <!-- 对于未知的SQL查询，允许返回不同的结果集以达到通用的效果 -->
+        <setting name="multipleResultSetsEnabled" value="true" />
+        <!-- 当设置为‘true'的时候，懒加载的对象可能被任何懒属性全部加载。否则，每个属性都按需加载。 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 允许使用列标签代替列名 -->
+        <setting name="useColumnLabel" value="true" />
+        <!-- 对于批量更新操作缓存SQL以提高性能  -->
+        <setting name="defaultExecutorType" value="REUSE" />
+        <!-- 数据库超过25000秒仍未响应则超时 -->
+        <setting name="defaultStatementTimeout" value="25000" />
+        <setting name="localCacheScope" value="SESSION"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias alias="Integer" type="java.lang.Integer" />
+        <typeAlias alias="String" type="java.lang.String" />
+        <typeAlias alias="Long" type="java.lang.Long" />
+        <typeAlias alias="HashMap" type="java.util.HashMap" />
+        <typeAlias alias="LinkedHashMap" type="java.util.LinkedHashMap" />
+        <typeAlias alias="ArrayList" type="java.util.ArrayList" />
+        <typeAlias alias="LinkedList" type="java.util.LinkedList" />
+    </typeAliases>
+</configuration>

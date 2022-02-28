@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aorise.mapper.system.SysUserMapper">
+    <resultMap id="BaseResultMap" type="com.aorise.model.system.SysUserModel">
+        <id column="ID" property="id" jdbcType="INTEGER" javaType="Integer"></id>
+        <result column="user_name" property="userName" jdbcType="VARCHAR" javaType="String"></result>
+        <result column="password" property="passWord" jdbcType="VARCHAR" javaType="String"></result>
+        <result column="name" property="name" jdbcType="VARCHAR" javaType="String"></result>
+        <result column="phone_num" property="phoneNum" jdbcType="VARCHAR" javaType="String"></result>
+        <result column="id_number" property="idNumber" jdbcType="VARCHAR" javaType="String"></result>
+        <result column="role" property="role" jdbcType="INTEGER" javaType="Integer"></result>
+        <result column="level" property="level" jdbcType="INTEGER" javaType="Integer"></result>
+    </resultMap>
+
+    <select id="findByUsername" parameterType="String" resultMap="BaseResultMap">
+        SELECT u.ID,u.user_name,u.password,u.name,u.phone_num,u.id_number,u.role,u.`level`
+        FROM sys_user u
+        WHERE user_name= #{username}
+    </select>
+
+    <!--根据id查询对象-->
+    <select id="findObject" parameterType="Integer" resultMap="BaseResultMap">
+        SELECT u.id,u.user_name,u.password
+        FROM sys_user u
+        WHERE u.id = #{id}
+    </select>
+
+    <!--修改用户-->
+    <update id="editeObject" parameterType="com.aorise.model.system.SysUserModel">
+        UPDATE sys_user
+        set password=#{passWord}
+         WHERE id=#{id}
+    </update>
+
+</mapper>

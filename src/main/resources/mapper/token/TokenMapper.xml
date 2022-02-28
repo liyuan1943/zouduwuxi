@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aorise.mapper.token.TokenMapper" >
+
+    <resultMap id="BaseResultMap" type="com.aorise.model.token.TokenEntity" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="token" property="token" jdbcType="VARCHAR" />
+        <result column="expires_in" property="expiresIn" jdbcType="INTEGER" />
+        <result column="edit_time" property="editTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <!--根据id查询token信息-->
+    <select id="getTokenById" resultMap="BaseResultMap" parameterType="java.util.Map" statementType="PREPARED">
+        SELECT id,token,expires_in,edit_time
+        FROM api_token
+        WHERE
+        id = #{id}
+    </select>
+
+    <!--修改token信息-->
+    <update id="updateToken" parameterType="java.util.Map" statementType="PREPARED" >
+        UPDATE api_token
+        SET token=#{token},expires_in=#{expiresIn},edit_ip=#{editIp}
+        WHERE
+        id = #{id}
+    </update>
+
+
+</mapper>

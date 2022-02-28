@@ -1,0 +1,78 @@
+server:
+  port: 8066
+  tomcat:
+    max-http-post-size: 4194304
+  max-http-header-size: 4194304
+spring:
+  servlet:
+    multipart:
+      max-file-size: 1MB
+      max-request-size: 1MB
+      enabled: true
+  datasource:
+    url: jdbc:mysql://localhost/tindoe?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: zouduhh
+    password: h7jesqu4
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+       #最小空闲连接
+       minimum-idle: 5
+       # 空闲连接存活最大时间，默认600000（10分钟）
+       idle-timeout: 180000
+       # 连接池最大连接数，默认是10
+       maximum-pool-size: 10
+       # 此属性控制从池返回的连接的默认自动提交行为,默认值：true
+       auto-commit: true
+       pool-name: MyHikariCP
+       #池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+       max-lifetime: 1800000
+       # 数据库连接超时时间,默认30秒，即30000
+       connection-timeout: 30000
+       connection-test-query: select 1
+mybatis:
+  mapper-locations: classpath*:/mapper/*/*.xml
+#打印sql
+logging:
+  level:
+    com.aorise: error
+  path: /home/tindoeltlijnmdcobe/logs/log/
+
+
+
+##### mybatis-plus #####
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*Mapper.xml
+  type-aliases-package: com.aorise.model
+  global-config:
+    id-type: 1  #1:数据库ID自增   2:用户输入id   3:全局唯一id(IdWorker)   4:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: true  #刷新mapper 调试神器
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true #配置的缓存的全局开关
+    lazy-loading-enabled: true #延时加载的开关
+    multiple-result-sets-enabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+
+
+
+upload:
+  savepath: files/
+  fileURL: https://www.tindoe.com/apiserver/ #正式环境服务地址
+  imgURL: /webapps/files/
+
+  #静态资源对外暴露的访问路径
+  file.staticAccessPath: /static/image/**
+  #文件上传目录（注意Linux和Windows上的目录结构不同）
+  #file.uploadFolder=/root/uploadFiles/
+  #特别要注意此位置
+  #savepath: d://uploadFiles/
+
+
+#微信配置信息
+wechat:
+  appId_pro: wxf6ce14e696512786
+  appSecret_pro: 7e14857d1c93cad1943e85f5e7def7db
+  # 更新token标志：0不更新，1更新
+  update_flag: 1
