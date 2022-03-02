@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,7 +45,7 @@ public class WechatUserController {
      * @date   2018/04/08
      */
     @ApiOperation(value = "小程序用户登录,返回用户memberId", notes = "小程序用户登录,返回用户memberId", produces = "application/json")
-    @RequestMapping(value = "/api/wechatUser/getWechatProOpenId", method = RequestMethod.GET, produces = "application/xml; charset=UTF-8")
+    @RequestMapping(value = "/api/wechatUser/getWechatProOpenId", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String getWechatProOpenId(@ApiParam(value = "code", required = true) @RequestParam(value = "code", required = true) String code,
                                      @ApiParam(value = "性别", required = true) @RequestParam(value = "gender", required = true) Integer gender,
                                      @ApiParam(value = "昵称", required = true) @RequestParam(value = "nickName", required = true) String nickName,

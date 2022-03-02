@@ -1,24 +1,20 @@
-package com.aorise.model.banner;
+package com.aorise.model.medal;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.util.Date;
-
 /**
-* 轮播图
+* 勋章
 * @author cat
 * @version 1.0
 */
-@TableName("banner")
+@TableName("medal")
 @Data
-public class BannerEntity {
+public class MedalEntity {
 
     /**
      * 主键
@@ -27,16 +23,23 @@ public class BannerEntity {
     private Integer id;
 
     /**
-     * 类型：1活动，2景点
+     * 景点ID
      */
-    @ApiModelProperty(value = "类型：1活动，2景点")
-    @TableField("type")
-    private String type;
+    @ApiModelProperty(value = "景点ID")
+    @TableField("scenic_id")
+    private String scenicId;
 
     /**
-     * 轮播图
+     * 年份
      */
-    @ApiModelProperty(value = "轮播图")
+    @ApiModelProperty(value = "年份")
+    @TableField("year")
+    private String year;
+
+    /**
+     * 勋章图片
+     */
+    @ApiModelProperty(value = "勋章图片")
     @TableField("pic")
     private String pic;
 

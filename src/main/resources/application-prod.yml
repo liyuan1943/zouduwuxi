@@ -10,7 +10,7 @@ spring:
       max-request-size: 1MB
       enabled: true
   datasource:
-    url: jdbc:mysql://localhost/tindoe?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    url: jdbc:mysql://localhost/zouduhh?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     username: zouduhh
     password: h7jesqu4
     driver-class-name: com.mysql.jdbc.Driver
@@ -59,7 +59,7 @@ mybatis-plus:
 
 upload:
   savepath: files/
-  fileURL: https://www.tindoe.com/apiserver/ #正式环境服务地址
+  fileURL: http://zouduhh.gotoip55.com./apiserver/ #正式环境服务地址
   imgURL: /webapps/files/
 
   #静态资源对外暴露的访问路径

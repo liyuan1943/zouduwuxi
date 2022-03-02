@@ -36,7 +36,7 @@ public class WechatUserServiceImpl implements WechatUserService {
     public static String getUserInfoUrl = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
 
     // 小程序获取用户openId（GET）
-    public static String getProUserOpenIdUrl = "https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_cod";
+    public static String getProUserOpenIdUrl = "https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code";
 
     @Autowired
     private MemberService memberService;
@@ -62,7 +62,7 @@ public class WechatUserServiceImpl implements WechatUserService {
             try {
                 userInfoModel = new UserInfoModel();
                 userInfoModel.setOpenid(jsonObject.getString("openid"));
-                userInfoModel.setUnionid(jsonObject.getString("unionid"));
+                //userInfoModel.setUnionid(jsonObject.getString("unionid"));
 
             } catch (WechatException e) {
                 userInfoModel = null;
