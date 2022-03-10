@@ -116,6 +116,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
         entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
         ActivityEntity activityEntity = this.getOne(entity);
         if(activityEntity != null){
+            //查询活动关联的景点
             QueryWrapper<ActivityScenicEntity> activityScenicEntityQueryWrapper = new QueryWrapper<>();
             activityScenicEntityQueryWrapper.eq("activity_id", id);
             List<ActivityScenicEntity> activityScenicEntities = activityScenicMapper.selectList(activityScenicEntityQueryWrapper);
@@ -126,6 +127,19 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
                     scenicEntities.add(scenicEntity);
                 }
                 activityEntity.setScenicEntities(scenicEntities);
+            }
+            //查询活动是否开放
+            Date dateBegin = Utils.strToDate(activityEntity.getBeginDate(), "yyyy-MM-dd");
+            Date dateExpiration = Utils.strToDate(activityEntity.getExpirationDate(), "yyyy-MM-dd");
+            Date dateNow = Utils.strToDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), "yyyy-MM-dd");
+            if (dateBegin.compareTo(dateNow)>0) {
+                activityEntity.setIsOpenning(ConstDefine.ACTIVITY_WAIT);
+            }else if (dateBegin.compareTo(dateNow)<=0 && dateExpiration.compareTo(dateNow)>=0){
+                activityEntity.setIsOpenning(ConstDefine.ACTIVITY_OPENNING);
+            }else if (dateExpiration.compareTo(dateNow)<0){
+                activityEntity.setIsOpenning(ConstDefine.ACTIVITY_END);
+            }else {
+                activityEntity.setIsOpenning(0);
             }
         }
         return activityEntity;

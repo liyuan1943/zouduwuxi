@@ -1,4 +1,4 @@
-package com.aorise.model.scenic;
+package com.aorise.model.checkpoint;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -8,13 +8,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
-* 景点打卡点
+* 打卡记录
 * @author cat
 * @version 1.0
 */
-@TableName("check_point")
+@TableName("check_point_record")
 @Data
-public class CheckPointEntity {
+public class CheckPointRecordEntity {
 
     /**
      * 主键
@@ -30,11 +30,18 @@ public class CheckPointEntity {
     private Integer scenicId;
 
     /**
-     * 打卡点名称
+     * 打卡点ID
      */
-    @ApiModelProperty(value = "打卡点名称")
-    @TableField("name")
-    private String name;
+    @ApiModelProperty(value = "打卡点ID")
+    @TableField("check_point_id")
+    private Integer checkPointId;
+
+    /**
+     * 会员ID
+     */
+    @ApiModelProperty(value = "会员ID")
+    @TableField("member_id")
+    private Integer memberId;
 
     /**
      * 经度
@@ -49,20 +56,6 @@ public class CheckPointEntity {
     @ApiModelProperty(value = "纬度")
     @TableField("latitude")
     private String latitude;
-
-    /**
-     * 打卡范围半径
-     */
-    @ApiModelProperty(value = "打卡范围半径")
-    @TableField("radius")
-    private Integer radius;
-
-    /**
-     * 打卡排序
-     */
-    @ApiModelProperty(value = "打卡排序")
-    @TableField("sort")
-    private Integer sort;
 
     /**
      * 是否删除：-1删除，1正常
@@ -81,4 +74,11 @@ public class CheckPointEntity {
      */
     @TableField("edit_date")
     private String editDate;
+
+    /**
+     * 打卡点名称
+     */
+    @ApiModelProperty(value = "打卡点名称")
+    @TableField(exist = false)
+    private String checkPointName;
 }

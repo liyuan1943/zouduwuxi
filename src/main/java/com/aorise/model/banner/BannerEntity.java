@@ -46,6 +46,16 @@ public class BannerEntity {
     @TableField("is_delete")
     private Integer isDelete;
 
+    /**
+     * 创建时间
+     */
+    @TableField("create_date")
+    private String createDate;
 
+    /**
+     * 修改日期
+     */
+    @TableField("edit_date")
+    private String editDate;
 
 }

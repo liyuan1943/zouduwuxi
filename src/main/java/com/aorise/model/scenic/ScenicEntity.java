@@ -1,5 +1,6 @@
 package com.aorise.model.scenic;
 
+import com.aorise.model.checkpoint.CheckPointEntity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

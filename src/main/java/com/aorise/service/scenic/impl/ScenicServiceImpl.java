@@ -1,8 +1,8 @@
 package com.aorise.service.scenic.impl;
 
-import com.aorise.mapper.scenic.CheckPointMapper;
+import com.aorise.mapper.checkpoint.CheckPointMapper;
 import com.aorise.mapper.scenic.ScenicMapper;
-import com.aorise.model.scenic.CheckPointEntity;
+import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.common.UploadService;
 import com.aorise.service.scenic.ScenicService;

@@ -80,6 +80,12 @@ public class MessageEntity {
     private String createDate;
 
     /**
+     * 修改日期
+     */
+    @TableField("edit_date")
+    private String editDate;
+
+    /**
      * 会员昵称
      */
     @TableField(exist = false)

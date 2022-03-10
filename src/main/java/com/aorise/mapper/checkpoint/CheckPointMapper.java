@@ -1,6 +1,6 @@
-package com.aorise.mapper.scenic;
+package com.aorise.mapper.checkpoint;
 
-import com.aorise.model.scenic.CheckPointEntity;
+import com.aorise.model.checkpoint.CheckPointEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;

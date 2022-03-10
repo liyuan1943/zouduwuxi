@@ -1,6 +1,8 @@
 package com.aorise.controller.scenic;
 
+import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.scenic.ScenicEntity;
+import com.aorise.service.checkpoint.CheckPointService;
 import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.StatusDefine;
 import com.aorise.utils.StatusDefineMessage;
@@ -20,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 景点 控制器
@@ -177,6 +180,5 @@ public class ScenicController {
             return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
         }
     }
-
 
 }
