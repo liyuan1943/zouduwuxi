@@ -1,9 +1,11 @@
 package com.aorise.service.checkpoint.impl;
 
+import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.checkpoint.CheckPointMapper;
 import com.aorise.mapper.checkpoint.CheckPointRecordMapper;
 import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.checkpoint.CheckPointRecordEntity;
+import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.checkpoint.CheckPointRecordService;
 import com.aorise.service.checkpoint.CheckPointService;
 import com.aorise.utils.define.ConstDefine;
@@ -69,6 +71,20 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
             }
         }
         return page;
+    }
+
+    /**
+     * 新增打卡记录
+     *
+     * @param checkPointRecordEntity 打卡记录
+     * @return int 影响行数
+     * @author cat
+     * @date Created in 2018/9/20 9:27
+     * @modified By:
+     */
+    @Override
+    public int addCheckPointRecord(CheckPointRecordEntity checkPointRecordEntity) {
+
     }
 
 }

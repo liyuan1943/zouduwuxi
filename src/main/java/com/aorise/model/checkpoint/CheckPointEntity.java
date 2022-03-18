@@ -58,11 +58,11 @@ public class CheckPointEntity {
     private Integer radius;
 
     /**
-     * 打卡排序
+     * 是否终点：1是，2否
      */
-    @ApiModelProperty(value = "打卡排序")
-    @TableField("sort")
-    private Integer sort;
+    @ApiModelProperty(value = "是否终点：1是，2否")
+    @TableField("is_destination")
+    private Integer isDestination;
 
     /**
      * 是否删除：-1删除，1正常

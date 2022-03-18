@@ -23,6 +23,9 @@ public interface StatusDefine {
     int SUCCESS = 0;
     int FAILURE = -1;
 
+    //参数不匹配
+    int PARAM_NUL=30005;
+
     //系统状态
     //系统错误
     int SYS_ERROR = 5001;

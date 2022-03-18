@@ -69,37 +69,5 @@ public class CheckPointController {
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", checkPointEntities).toString();
     }
 
-    /**
-     * 根据条件分页查询打卡记录
-     * HTTP 方式：GET
-     * API 路径：/api/checkPoint/checkPointRecord/pageIndex/{pageIndex}/pageNum/{pageNum}
-     * 方法名：getCheckPointRecordByPage
-     * 方法返回类型：String
-     */
-    @ApiOperation(value = "根据条件分页查询打卡记录", notes = "根据条件分页查询打卡记录", produces = "application/json")
-    @RequestMapping(value = "/api/checkPoint/checkPointRecord/pageIndex/{pageIndex}/pageNum/{pageNum}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getCheckPointRecordByPage(@ApiParam(value = "会员ID", required = false) @RequestParam(value = "memberId", required = false) Integer memberId,
-                                            @ApiParam(value = "景点ID", required = false) @RequestParam(value = "scenicId", required = false) Integer scenicId,
-                                            @ApiParam(value = "页索引", required = true) @PathVariable(value = "pageIndex", required = true) Integer pageIndex,
-                                            @ApiParam(value = "页大小", required = true) @PathVariable(value = "pageNum", required = true) Integer pageNum) {
-        logger.debug("Request RESTful API:getCheckPointRecordByPage");
-        logger.debug("memberId：" + memberId);
-        logger.debug("scenicId：" + scenicId);
-        logger.debug("pageIndex：" + pageIndex);
-        logger.debug("pageNum：" + pageNum);
-        Page<CheckPointRecordEntity> page = new Page<>(pageIndex, pageNum);
-        try {
-            //封装查询参数
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("memberId", memberId);
-            map.put("scenicId", scenicId);
-            page = checkPointRecordService.getCheckPointRecordByPage(map, page);
-
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
-        return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
-    }
 
 }

@@ -30,6 +30,10 @@ public interface ConstDefine {
     int ACTIVITY_OPENNING = 2;
     int ACTIVITY_END = 3;
 
+    //是否终点：1是，2否
+    int IS_DESTINATION_YES = 1;
+    int IS_DESTINATION_NO = 2;
+
     //正式环境服务地址
     String PRO_WEBSITE = "https://www.tindoe.com/apiserver";
 

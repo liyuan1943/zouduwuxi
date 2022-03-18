@@ -115,15 +115,10 @@ public class ScenicController {
         logger.debug("Request RESTful API:addScenic");
         logger.debug("scenic：" + scenicEntity);
 
-        try {
-            int iRet = scenicService.addScenic(scenicEntity);
-            if (iRet > 0) {
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", scenicEntity.getId()).toString();
-            } else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
-        } catch (Exception e) {
-
+        int iRet = scenicService.addScenic(scenicEntity);
+        if (iRet > 0) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", scenicEntity.getId()).toString();
+        } else {
             return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
         }
     }

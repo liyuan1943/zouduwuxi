@@ -1,5 +1,6 @@
 package com.aorise.service.scenic.impl;
 
+import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.checkpoint.CheckPointMapper;
 import com.aorise.mapper.scenic.ScenicMapper;
 import com.aorise.model.checkpoint.CheckPointEntity;
@@ -69,6 +70,17 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
      */
     @Override
     public int addScenic(ScenicEntity scenicEntity) {
+        //验证一个景点有且只能有一个终点打卡点
+        int sum =0;
+        for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
+            if(checkPointEntity.getIsDestination()==ConstDefine.IS_DESTINATION_YES){
+                sum++;
+            }
+        }
+        if(sum!= 1){
+            throw new ServiceException("景点必须且只能设置一个终点打卡点");
+        }
+
         boolean bol = this.save(scenicEntity);
         if (bol) {
             //新增打卡点
@@ -94,6 +106,17 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
      */
     @Override
     public int updateScenic(ScenicEntity scenicEntity, HttpServletRequest request) {
+        //验证一个景点有且只能有一个终点打卡点
+        int sum =0;
+        for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
+            if(checkPointEntity.getIsDestination()==ConstDefine.IS_DESTINATION_YES){
+                sum++;
+            }
+        }
+        if(sum!= 1){
+            throw new ServiceException("景点必须且只能设置一个终点打卡点");
+        }
+
         ScenicEntity oldScenic = this.getById(scenicEntity.getId());
         boolean bol = this.updateById(scenicEntity);
         if (bol) {
