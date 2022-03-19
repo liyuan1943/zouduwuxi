@@ -49,10 +49,10 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
 
         //装载查询条件
         QueryWrapper<CheckPointRecordEntity> queryWrapper = new QueryWrapper<>();
-        if (memberId!=null ) {
+        if (memberId != null) {
             queryWrapper.eq("member_id", memberId);
         }
-        if (scenicId!=null ) {
+        if (scenicId != null) {
             queryWrapper.eq("scenic_id", scenicId);
         }
 
@@ -65,7 +65,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
         if (entities != null) {
             for (CheckPointRecordEntity checkPointRecordEntity : entities) {
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
-                if(checkPointEntity!= null){
+                if (checkPointEntity != null) {
                     checkPointRecordEntity.setCheckPointName(checkPointEntity.getName());
                 }
             }
@@ -84,7 +84,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
      */
     @Override
     public int addCheckPointRecord(CheckPointRecordEntity checkPointRecordEntity) {
-
+        return 1;
     }
 
 }
