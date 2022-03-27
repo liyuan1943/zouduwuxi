@@ -63,7 +63,7 @@ mybatis-plus:
 
 upload:
   savepath: files/
-  fileURL:  http://192.168.2.43:8066/ #本地测试服务地址
+  fileURL:   #本地测试服务地址
   imgURL: /webapps/files/
 
   #静态资源对外暴露的访问路径

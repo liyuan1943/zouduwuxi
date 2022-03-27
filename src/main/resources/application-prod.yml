@@ -59,7 +59,7 @@ mybatis-plus:
 
 upload:
   savepath: files/
-  fileURL: http://zouduhh.gotoip55.com./apiserver/ #正式环境服务地址
+  fileURL:  #正式环境服务地址
   imgURL: /webapps/files/
 
   #静态资源对外暴露的访问路径
