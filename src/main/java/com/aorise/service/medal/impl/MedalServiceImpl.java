@@ -44,8 +44,8 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public int addMedal(MedalEntity medalEntity) {
-        if (medalEntity.getScenicId() == 0) {
-            //景点ID=0的是年度勋章，判断不能添加多个相同年份的勋章
+        if (medalEntity.getScenicId() == 9999) {
+            //景点ID=9999的是年度勋章，判断不能添加多个相同年份的勋章
             QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("year", medalEntity.getYear());
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
