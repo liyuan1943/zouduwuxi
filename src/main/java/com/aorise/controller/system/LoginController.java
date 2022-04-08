@@ -30,7 +30,7 @@ public class LoginController {
         Subject currentUser = SecurityUtils.getSubject();//获取当前sbuject
         UsernamePasswordToken token = new UsernamePasswordToken(loginUserModel.getUsername(), Utils.getMd5DigestAsHex(loginUserModel.getPassword()));
         token.setRememberMe(true);
-        try {
+
             //执行登陆
             currentUser.login(token);
             SecurityUtils.getSubject().getSession().setTimeout(1800000);//设置超时时间 单位ms
@@ -45,23 +45,6 @@ public class LoginController {
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS),
                     StatusDefine.SUCCESS, "", user).toString();
 
-        } catch (IncorrectCredentialsException ae) {//密码错误
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.U_PWD_FAILED), StatusDefine.U_PWD_FAILED,
-                    "", null).toString();
-        } catch (UnknownAccountException e) {//用户不存在
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.U_INEXISTENCE), StatusDefine.U_INEXISTENCE,
-                    "", null).toString();
-        } catch (DisabledAccountException e) {//用户冻结
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.U_UNACTIVE), StatusDefine.U_UNACTIVE,
-                    "", null).toString();
-        } catch (DataAccessException e) {
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.DB_ERROR),
-                    StatusDefine.DB_ERROR, "", null).toString();
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR,
-                    "", null).toString();
-        }
     }
 
     @RequestMapping(value = "/api/403", method = RequestMethod.GET)

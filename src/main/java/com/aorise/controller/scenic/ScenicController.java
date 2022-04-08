@@ -61,7 +61,7 @@ public class ScenicController {
         logger.debug("pageNum：" + pageNum);
 
         Page<ScenicEntity> page = new Page<>(pageIndex, pageNum);
-        try {
+
             //装载查询条件
             QueryWrapper<ScenicEntity> entity = new QueryWrapper<>();
             if (StringUtils.isNotBlank(name)) {
@@ -73,10 +73,7 @@ public class ScenicController {
             entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             entity.orderByDesc("create_date");
             page = scenicService.page(page, entity);
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
     }
 
@@ -93,12 +90,9 @@ public class ScenicController {
         logger.debug("Request RESTful API:getScenicById");
         logger.debug("id：" + id);
         ScenicEntity scenicEntity = null;
-        try {
-            scenicEntity = scenicService.getScenicById(id);
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
+            scenicEntity = scenicService.getScenicById(id);
+
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", scenicEntity).toString();
     }
 
@@ -136,17 +130,13 @@ public class ScenicController {
         logger.debug("Request RESTful API:updateScenic");
         logger.debug("scenic：" + scenicEntity);
 
-        try {
             int iRet = scenicService.updateScenic(scenicEntity, request);
             if (iRet > 0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
     /**
@@ -163,17 +153,13 @@ public class ScenicController {
         logger.debug("Request RESTful API:deleteScenic");
         logger.debug("id：" + id);
 
-        try {
             int iRet = scenicService.deleteScenic(id, request);
             if (iRet > 0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
 }

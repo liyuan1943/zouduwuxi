@@ -60,7 +60,7 @@ public class NewsController {
         logger.debug("pageNum：" + pageNum);
 
         Page<NewsEntity> page = new Page<>(pageIndex, pageNum);
-        try {
+
             //装载查询条件
             QueryWrapper<NewsEntity> entity = new QueryWrapper<>();
             if (StringUtils.isNotBlank(title)) {
@@ -71,10 +71,6 @@ public class NewsController {
             entity.orderByDesc("create_date");
             page = newsService.page(page, entity);
 
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
     }
 
@@ -91,15 +87,12 @@ public class NewsController {
         logger.debug("Request RESTful API:getNewsById");
         logger.debug("id：" + id);
         NewsEntity newsEntity = null;
-        try {
+
             QueryWrapper<NewsEntity> entity = new QueryWrapper<>();
             entity.eq("id", id);
             entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             newsEntity = newsService.getOne(entity);
-        }catch (Exception e){
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", newsEntity).toString();
     }
 
@@ -116,17 +109,12 @@ public class NewsController {
         logger.debug("Request RESTful API:addNews");
         logger.debug("news：" + newsEntity);
 
-        try {
             boolean bol = newsService.save(newsEntity);
             if (bol) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", newsEntity.getId()).toString();
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
     /**
@@ -142,7 +130,6 @@ public class NewsController {
         logger.debug("Request RESTful API:updateNews");
         logger.debug("news：" + newsEntity);
 
-        try {
             NewsEntity n = newsService.getById(newsEntity.getId());
             boolean bol = newsService.updateById(newsEntity);
             if (bol) {
@@ -154,10 +141,6 @@ public class NewsController {
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
     /**
@@ -174,7 +157,6 @@ public class NewsController {
         logger.debug("Request RESTful API:deleteNews");
         logger.debug("id：" + id);
 
-        try {
             NewsEntity newsEntity =new NewsEntity();
             newsEntity.setIsDelete(ConstDefine.IS_DELETE);
             newsEntity.setId(id);
@@ -187,10 +169,6 @@ public class NewsController {
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
 

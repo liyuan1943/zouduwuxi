@@ -19,7 +19,7 @@ public interface UploadService {
      * @param request
      * @return
      */
-    String uploadImg(MultipartFile file, HttpServletRequest request) throws Exception;
+    String uploadImg(MultipartFile file, HttpServletRequest request);
 
     /**
      * 删除文件
@@ -27,7 +27,7 @@ public interface UploadService {
      * @param request
      * @return
      */
-    boolean deleteImg(String fileName,HttpServletRequest request) throws Exception;
+    boolean deleteImg(String fileName,HttpServletRequest request) ;
 
     /**
      * 批量删除图片
@@ -35,7 +35,7 @@ public interface UploadService {
      * @param request
      * @return
      */
-    boolean deleteImgList(String fileNames,HttpServletRequest request) throws Exception;
+    boolean deleteImgList(String fileNames,HttpServletRequest request) ;
 
     /**
      * 后台通过图片路径删除文件

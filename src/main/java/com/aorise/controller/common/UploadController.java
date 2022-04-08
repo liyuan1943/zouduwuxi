@@ -54,13 +54,10 @@ public class UploadController {
     public String UploadImg(@ApiParam ( value = "文件", required = true ) @RequestParam( value = "file" ) MultipartFile file,
                             HttpServletRequest request) {
 
-        try {
             String result = uploadService.uploadImg(file,request);
 
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", result).toString();
-        } catch (Exception e) {
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR, "", null).toString();
-        }
+
     }
 
     /**
@@ -77,7 +74,7 @@ public class UploadController {
                              HttpServletRequest request) {
 
         logger.debug(fileName);
-        try {
+
 
             boolean deleteFile = uploadService.deleteImg(fileName,request);
             //删除方法
@@ -87,16 +84,6 @@ public class UploadController {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "删除失败", null).toString();
             }
 
-        } catch (ServiceException ex) {
-            logger.error("controller:UploadController. function:DeleteImg. msg:Delete image failure. error:"+ex.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, ex.getMessage(), null).toString();
-        } catch (FileServiceException ex) {
-            logger.error("controller:UploadController. function:DeleteImg. msg:Delete image failure. error:"+ex.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", null).toString();
-        } catch (Exception ex) {
-            logger.error("controller:UploadController. function:DeleteImg. msg:Delete image failure. error:"+ex.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR, "", null).toString();
-        }
     }
 
     /**
@@ -113,7 +100,7 @@ public class UploadController {
                             HttpServletRequest request) {
 
         logger.debug(fileNames);
-        try {
+
             if (StringUtils.isBlank(fileNames)) {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "文件名为空", null).toString();
             }
@@ -126,13 +113,6 @@ public class UploadController {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "删除失败", null).toString();
             }
 
-        } catch (FileServiceException ex) {
-            logger.error("controller:UploadController. function:DeleteImg. msg:Delete image failure. error:"+ex.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", null).toString();
-        }catch (Exception ex) {
-            logger.error("controller:UploadController. function:DeleteImg. msg:Delete image failure. error:"+ex.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR, "", null).toString();
-        }
     }
 
 }

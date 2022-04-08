@@ -54,17 +54,13 @@ public class CheckPointRecordController {
         logger.debug("pageIndex：" + pageIndex);
         logger.debug("pageNum：" + pageNum);
         Page<CheckPointRecordEntity> page = new Page<>(pageIndex, pageNum);
-        try {
+
             //封装查询参数
             Map<String, Object> map = new HashMap<>(16);
             map.put("memberId", memberId);
             map.put("scenicId", scenicId);
             page = checkPointRecordService.getCheckPointRecordByPage(map, page);
 
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
     }
 

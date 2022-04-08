@@ -58,14 +58,11 @@ public class CheckPointController {
     public String getAllCheckPoint() {
         logger.debug("Request RESTful API:getAllCheckPoint");
         List<CheckPointEntity> checkPointEntities = null;
-        try {
+
             QueryWrapper<CheckPointEntity> checkPointEntityQueryWrapper = new QueryWrapper<>();
             checkPointEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             checkPointEntities = checkPointService.list(checkPointEntityQueryWrapper);
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", checkPointEntities).toString();
     }
 

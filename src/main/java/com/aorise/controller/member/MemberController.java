@@ -46,22 +46,15 @@ public class MemberController {
     @ApiOperation(value = "根据会员ID删除会员", httpMethod = "POST", response = String.class, notes = "系统管理-会员管理-删除会员")
     @RequestMapping(value = "/api/member/deleteMember", method = RequestMethod.POST)
     public String deleteMember(@ApiParam(value = "会员ID", required = true) @RequestParam(value = "memberId", required = true) Integer memberId) {
-        try {
+
             logger.debug("Request RESTful API:deleteMember");
             logger.info("memberId：" + memberId);
-
 
             //调用接口
             memberService.deleteMemberInfoByMemberId(memberId);
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS,
                     "", null).toString();
 
-        } catch (Exception e) {
-            logger.error("controller:SystemController. function:deleteObject...msg:An exception occurred when findmemberObject a member.");
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR,
-                    "", null).toString();
-        }
     }
 
     /**
@@ -74,7 +67,7 @@ public class MemberController {
     @ApiOperation(value = "根据会员ID查询会员信息", httpMethod = "GET", response = String.class, notes = "系统管理-会员管理-根据会员ID查询会员信息")
     @RequestMapping(value = "/api/member/id/{id}", method = RequestMethod.GET, produces = "application/json")
     public String getMemberById(@ApiParam(value = "会员ID", required = true) @PathVariable(value = "memberId", required = true) Integer id) {
-        try {
+
             logger.debug("Request RESTful API:id");
             logger.info("id：" + id);
 
@@ -83,12 +76,6 @@ public class MemberController {
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS,
                     "", model).toString();
 
-        } catch (Exception e) {
-            logger.error("controller:SystemController. function:deleteObject...msg:An exception occurred when findmemberObject a member.");
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR,
-                    "", null).toString();
-        }
 
     }
 
@@ -106,7 +93,7 @@ public class MemberController {
                                        @ApiParam(value = "会员昵称", required = false) @RequestParam(value = "nickname", required = false) String nickname,
                                        @ApiParam(value = "页索引", required = true) @PathVariable(value = "pageIndex") int pageIndex,
                                        @ApiParam(value = "页大小", required = true) @PathVariable(value = "pageNum") int pageNum) {
-        try {
+
             logger.debug("Request RESTful API:getmemberListByPage");
             logger.debug("memberCode" + memberCode);
             logger.debug("phone" + phone);
@@ -118,7 +105,7 @@ public class MemberController {
             Page<MemberEntity> page = new Page<>(pageIndex, pageNum);
             //装载查询条件
             QueryWrapper<MemberEntity> wrapper = new QueryWrapper<>();
-            try {
+
                 if (!org.apache.commons.lang.StringUtils.isBlank(memberCode)) {
                     wrapper.like("code", memberCode);
                 }
@@ -131,18 +118,8 @@ public class MemberController {
                 wrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
                 wrapper.orderByDesc("create_date");
                 page = memberService.page(page, wrapper);
-            } catch (Exception e) {
 
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
-
-        } catch (Exception e) {
-            logger.error("controller:SystemController. function:findmemberListByPage...msg:An exception occurred when findmemberListByPage a member.");
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR,
-                    "", null).toString();
-        }
 
     }
 

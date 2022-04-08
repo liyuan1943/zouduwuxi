@@ -50,7 +50,7 @@ public class UserController {
                                      @ApiParam(value = "原密码", required = true) @RequestParam(value = "oldPassWord", required = true) String oldPassWord,
                                      @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPassWord", required = true) String newPassWord,
                                      @ApiParam(value = "确认新密码", required = true) @RequestParam(value = "affirmNewPassWord", required = true) String affirmNewPassWord) {
-        try {
+
             //参数判断
             dataValidation.chekeNotempty(userId, "id不能为空");
             dataValidation.chekeNotempty(oldPassWord, "原密码不能为空");
@@ -81,17 +81,6 @@ public class UserController {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE,
                         "", null).toString();
             }
-        } catch (DataValidationException e) {
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.DATA_FORMAT_ERROR), StatusDefine.DATA_FORMAT_ERROR,
-                    e.getMessage(), null).toString();
-        } catch (Exception e) {
-            logger.error("controller:SystemController. function:editeObjectEditPwd...msg:An exception occurred when update a user.");
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR,
-                    "", null).toString();
-        }
-
     }
 
     /**
@@ -104,7 +93,7 @@ public class UserController {
     @ApiOperation(value = "根据id查询用户", httpMethod = "GET", response = String.class, notes = "系统管理-用户管理-编辑用户信息展示")
     @RequestMapping(value = "/api/user/userId/{userId}", method = RequestMethod.GET, produces = "application/json")
     public String findObjectByuserid(@ApiParam(value = "用户id", required = true) @PathVariable(value = "userId", required = true) String userId) {
-        try {
+
             //参数判断
             dataValidation.chekeNotempty(userId, "id不能为空");
 
@@ -113,16 +102,6 @@ public class UserController {
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS,
                     "", model).toString();
 
-        } catch (DataValidationException e) {
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.DATA_FORMAT_ERROR), StatusDefine.DATA_FORMAT_ERROR,
-                    e.getMessage(), null).toString();
-        } catch (Exception e) {
-            logger.error("controller:SystemController. function:deleteObject...msg:An exception occurred when findUserObject a user.");
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR,
-                    "", null).toString();
-        }
 
     }
 

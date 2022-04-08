@@ -56,22 +56,11 @@ public class WechatUserController {
         logger.debug("nickName:"+nickName);
         logger.debug("avatarUrl:"+avatarUrl);
 
-        try {
-
             Integer memberId = wechatUserService.getWechatProUserInfo(code,gender,nickName,avatarUrl);
 
             logger.debug("memberId:"+memberId);
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, null, memberId).toString();
-        } catch (WechatException e) {
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, e.getMessage(), null).toString();
-        } catch (ServiceException e) {
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, e.getMessage(), null).toString();
-        } catch (Exception e) {
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, e.getMessage(), null).toString();
-        }
+
     }
 
 }

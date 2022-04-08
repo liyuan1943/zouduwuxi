@@ -42,7 +42,7 @@ public class CoreController {
                                  @RequestParam(name = "nonce",required = false) String  nonce ,
                                  @RequestParam(name = "timestamp",required = false) String  timestamp ,
                                  @RequestParam(name = "echostr",required = false) String  echostr) {
-        try {
+
             /**通过检验signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败*/
             if (SignUtil.checkSignature(signature, timestamp, nonce)) {
                 logger.info("接入成功");
@@ -50,11 +50,6 @@ public class CoreController {
             }
             logger.error("接入失败");
             return "";
-        } catch (WechatException e) {
-            logger.error("controller:CoreController. function:checkSignature.. error:" + e.getMessage());
-            logger.error("error:" + e.getMessage());
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, e.getMessage(), null).toString();
-        }
     }
 
     

@@ -11,7 +11,6 @@ import java.util.Locale;
 */
 public class Config {
 
-    // Format.
     public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
     public static final DateFormat DATE_FORMAT_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
     public static final DateFormat DATE_FORMAT_CH = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);

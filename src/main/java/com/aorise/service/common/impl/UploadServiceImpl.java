@@ -37,7 +37,7 @@ public class UploadServiceImpl implements UploadService {
      * @return
      */
     @Override
-    public String uploadImg(MultipartFile file,HttpServletRequest request) throws Exception {
+    public String uploadImg(MultipartFile file,HttpServletRequest request){
         //String contentType = file.getContentType();
         String fileName = file.getOriginalFilename();
         fileName =(int)((Math.random()*9+1)*10000) +System.currentTimeMillis()+ fileName;
@@ -50,7 +50,12 @@ public class UploadServiceImpl implements UploadService {
         //String filePath = fileuploadSetting.getImgURL();
 
         //上传文件
-        String result = Upload.uploadFile(file.getBytes(), filePath, newFileName);
+        String result = null;
+        try {
+            result = Upload.uploadFile(file.getBytes(), filePath, newFileName);
+        } catch (Exception e) {
+           throw new ServiceException(e.getMessage());
+        }
         result =fileuploadSetting.getFileURL()+fileuploadSetting.getSavepath()+result;
         return result;
     }
@@ -62,7 +67,7 @@ public class UploadServiceImpl implements UploadService {
      * @return
      */
     @Override
-    public boolean deleteImg(String fileName,HttpServletRequest request) throws Exception {
+    public boolean deleteImg(String fileName,HttpServletRequest request) {
         if (StringUtils.isBlank(fileName)) {
             throw new ServiceException("文件名为空");
         }
@@ -88,7 +93,7 @@ public class UploadServiceImpl implements UploadService {
      * @return
      */
     @Override
-    public boolean deleteImgList(String fileNames,HttpServletRequest request) throws Exception {
+    public boolean deleteImgList(String fileNames,HttpServletRequest request) {
         String filePath = request.getSession().getServletContext().getRealPath(fileuploadSetting.getSavepath());
 
         String[] fileNameArr = fileNames.split(",");

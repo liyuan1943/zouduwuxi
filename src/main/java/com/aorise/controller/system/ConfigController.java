@@ -50,14 +50,11 @@ public class ConfigController {
         logger.debug("Request RESTful API:getConfigByPage");
 
         ConfigEntity configEntity;
-        try {
+
             //装载查询条件
             QueryWrapper<ConfigEntity> entity = new QueryWrapper<>();
             configEntity = configService.getById(1);
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", configEntity).toString();
     }
 
@@ -74,17 +71,12 @@ public class ConfigController {
         logger.debug("Request RESTful API:updateConfig");
         logger.debug("config：" + configEntity);
 
-        try {
             boolean bol = configService.updateById(configEntity);
             if (bol) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "","").toString();
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
 

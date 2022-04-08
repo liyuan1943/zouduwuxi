@@ -58,6 +58,13 @@ public class CheckPointRecordEntity {
     private String latitude;
 
     /**
+     * 打卡时间
+     */
+    @ApiModelProperty(value = "打卡时间")
+    @TableField("check_time")
+    private String checkTime;
+
+    /**
      * 是否删除：-1删除，1正常
      */
     @TableField("is_delete")

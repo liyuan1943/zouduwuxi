@@ -63,17 +63,14 @@ public class ActivityController {
         logger.debug("pageNum：" + pageNum);
 
         Page<ActivityEntity> page = new Page<>(pageIndex, pageNum);
-        try {
+
             //封装查询参数
             Map<String, Object> map = new HashMap<>(16);
             map.put("name", name);
             map.put("isOpenning", isOpenning);
             page = activityService.getActivityByPage(map, page);
 
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
     }
 
@@ -90,12 +87,9 @@ public class ActivityController {
         logger.debug("Request RESTful API:getActivityById");
         logger.debug("id：" + id);
         ActivityEntity activityEntity = null;
-        try {
-            activityEntity = activityService.getActivityById(id);
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
+            activityEntity = activityService.getActivityById(id);
+
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", activityEntity).toString();
     }
 
@@ -112,17 +106,13 @@ public class ActivityController {
         logger.debug("Request RESTful API:addActivity");
         logger.debug("activity：" + activityEntity);
 
-        try {
             int iRet = activityService.addActivity(activityEntity);
             if (iRet > 0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", activityEntity.getId()).toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
     /**
@@ -138,17 +128,14 @@ public class ActivityController {
         logger.debug("Request RESTful API:updateActivity");
         logger.debug("activity：" + activityEntity);
 
-        try {
+
             int iRet = activityService.updateActivity(activityEntity, request);
             if (iRet > 0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
     /**
@@ -165,17 +152,14 @@ public class ActivityController {
         logger.debug("Request RESTful API:deleteActivity");
         logger.debug("id：" + id);
 
-        try {
+
             int iRet = activityService.deleteActivity(id, request);
             if (iRet > 0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
 

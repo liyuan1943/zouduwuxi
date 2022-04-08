@@ -56,7 +56,7 @@ public class BannerController {
         logger.debug("type：" + type);
 
         List<BannerEntity> bannerEntities;
-        try {
+
             //装载查询条件
             QueryWrapper<BannerEntity> entity = new QueryWrapper<>();
             if (type!=null && type>0) {
@@ -65,9 +65,7 @@ public class BannerController {
             entity.eq("is_delete",ConstDefine.IS_NOT_DELETE);
             bannerEntities = bannerService.list(entity);
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", bannerEntities).toString();
-        } catch (Exception e) {
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
+
     }
 
     /**
@@ -83,15 +81,12 @@ public class BannerController {
         logger.debug("Request RESTful API:getBannerById");
         logger.debug("id：" + id);
         BannerEntity bannerEntity = null;
-        try {
+
             QueryWrapper<BannerEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("id", id);
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             bannerEntity = bannerService.getOne(queryWrapper);
-        }catch (Exception e){
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", bannerEntity).toString();
     }
 
@@ -108,18 +103,13 @@ public class BannerController {
         logger.debug("Request RESTful API:addBanner");
         logger.debug("banner：" + bannerEntity);
 
-        try {
-
             boolean bol = bannerService.save(bannerEntity);
             if (bol) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", bannerEntity.getId()).toString();
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
     /**
@@ -135,7 +125,7 @@ public class BannerController {
         logger.debug("Request RESTful API:updateBanner");
         logger.debug("banner：" + bannerEntity);
 
-        try {
+
             BannerEntity b =bannerService.getById(bannerEntity.getId());
 
             bannerEntity.setIsDelete(ConstDefine.IS_NOT_DELETE);
@@ -149,10 +139,7 @@ public class BannerController {
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
     /**
@@ -169,7 +156,7 @@ public class BannerController {
         logger.debug("Request RESTful API:deleteBanner");
         logger.debug("id：" + id);
 
-        try {
+
             BannerEntity bannerEntity =new BannerEntity();
             bannerEntity.setIsDelete(ConstDefine.IS_DELETE);
             bannerEntity.setId(id);
@@ -184,10 +171,7 @@ public class BannerController {
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
             }
-        } catch (Exception e) {
 
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-        }
     }
 
 }

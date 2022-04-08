@@ -53,7 +53,7 @@ public class MessageController {
         logger.debug("pageNum：" + pageNum);
 
         Page<MessageEntity> page = new Page<>(pageIndex, pageNum);
-        try {
+
             //装载查询条件
             QueryWrapper<MessageEntity> entity = new QueryWrapper<>();
             entity.eq("scenic_id", scenicId);
@@ -62,11 +62,6 @@ public class MessageController {
 
             page = messageService.getMessageByPage(page, entity);
 
-
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
     }
 
@@ -83,17 +78,12 @@ public class MessageController {
         logger.debug("Request RESTful API:addMessage");
         logger.debug("message：" + messageEntity);
 
-        try {
             int bol = messageService.addMessage(messageEntity);
             if (bol>0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", messageEntity.getId()).toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
     /**
@@ -110,17 +100,12 @@ public class MessageController {
         logger.debug("Request RESTful API:deleteMessage");
         logger.debug("id：" + id);
 
-        try {
             int bool = messageService.deleteMessage(id,request);
             if (bool>0) {
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
             } else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
             }
-        } catch (Exception e) {
-
-            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-        }
     }
 
 }
