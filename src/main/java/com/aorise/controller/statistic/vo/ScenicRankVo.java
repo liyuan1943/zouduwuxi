@@ -1,12 +1,20 @@
 package com.aorise.controller.statistic.vo;
 
 
+import lombok.Data;
+
 /**
 * 景点排行查询结果VO
 * @author cat
 * @version 1.0
 */
+@Data
 public class ScenicRankVo {
+
+    /**
+     * 会员ID
+     */
+    private Integer memberId;
 
     /**
      * 排名
@@ -16,7 +24,7 @@ public class ScenicRankVo {
     /**
      * 会员头像
      */
-    private String head_pic;
+    private String headPic;
 
     /**
      * 会员昵称

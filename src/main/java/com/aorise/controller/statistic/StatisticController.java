@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,31 +38,48 @@ public class StatisticController {
     /**
      * 景点排行榜
      * HTTP 方式：GET
-     * API 路径：/api/statistic/pageIndex/{pageIndex}/pageNum/{pageNum}
+     * API 路径：/api/statistic/getScenicRank
      * 方法名：getScenicRankByPage
      * 方法返回类型：String
      */
     @ApiOperation(value = "景点排行榜", notes = "景点排行榜", produces = "application/json")
-    @RequestMapping(value = "/api/statistic/pageIndex/{pageIndex}/pageNum/{pageNum}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getScenicRankByPage(@ApiParam(value = "会员ID", required = false) @RequestParam(value = "memberId", required = false) Integer memberId,
-                                      @ApiParam(value = "景点ID", required = false) @RequestParam(value = "scenicId", required = false) Integer scenicId,
-                                      @ApiParam(value = "时间：1总榜，2年榜，3月榜", required = false) @RequestParam(value = "timeType", required = false) Integer timeType,
-                                      @ApiParam(value = "页索引", required = true) @PathVariable(value = "pageIndex", required = true) Integer pageIndex,
-                                      @ApiParam(value = "页大小", required = true) @PathVariable(value = "pageNum", required = true) Integer pageNum) {
-        logger.debug("Request RESTful API:getScenicRankByPage");
+    @RequestMapping(value = "/api/statistic/getScenicRank", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String getScenicRank(@ApiParam(value = "会员ID", required = true) @RequestParam(value = "memberId", required = true) Integer memberId,
+                                @ApiParam(value = "景点ID", required = false) @RequestParam(value = "scenicId", required = false) Integer scenicId,
+                                @ApiParam(value = "时间：1总榜，2年榜，3月榜", required = true) @RequestParam(value = "timeType", required = true) Integer timeType) {
+        logger.debug("Request RESTful API:getScenicRank");
         logger.debug("memberId：" + memberId);
         logger.debug("scenicId：" + scenicId);
         logger.debug("timeType：" + timeType);
-        logger.debug("pageIndex：" + pageIndex);
-        logger.debug("pageNum：" + pageNum);
-        Page<ScenicRankVo> page = new Page<>(pageIndex, pageNum);
         //封装查询参数
         Map<String, Object> map = new HashMap<>(16);
         map.put("memberId", memberId);
         map.put("scenicId", scenicId);
-        map.put("memberId", timeType);
-        page = statisticService.getScenicRankByPage(map, page);
-        return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
+        map.put("timeType", timeType);
+        List<ScenicRankVo> scenicRankVos = statisticService.getScenicRank(map);
+        return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", scenicRankVos).toString();
+    }
+
+    /**
+     * 活动排行榜
+     * HTTP 方式：GET
+     * API 路径：/api/statistic/getActivityRank
+     * 方法名：getScenicRankByPage
+     * 方法返回类型：String
+     */
+    @ApiOperation(value = "活动排行榜", notes = "活动排行榜", produces = "application/json")
+    @RequestMapping(value = "/api/statistic/getActivityRank", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String getActivityRank(@ApiParam(value = "会员ID", required = true) @RequestParam(value = "memberId", required = true) Integer memberId,
+                                @ApiParam(value = "活动ID", required = true) @RequestParam(value = "activityId", required = true) Integer activityId) {
+        logger.debug("Request RESTful API:getScenicRank");
+        logger.debug("memberId：" + memberId);
+        logger.debug("activityId：" + activityId);
+        //封装查询参数
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("memberId", memberId);
+        map.put("activityId", activityId);
+        List<ScenicRankVo> scenicRankVos = statisticService.getActivityRank(map);
+        return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", scenicRankVos).toString();
     }
 
 }
