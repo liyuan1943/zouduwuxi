@@ -55,7 +55,7 @@ public class ActivityController {
     @ApiOperation(value = "分页查询活动信息", notes = "分页查询活动信息", produces = "application/json")
     @RequestMapping(value = "/api/activity/pageIndex/{pageIndex}/pageNum/{pageNum}", method = RequestMethod.GET)
     public String getActivityByPage(@ApiParam(value = "活动名称", required = false) @RequestParam(value = "name", required = false) String name,
-                                    @ApiParam(value = "活动状态：1未开始，2进行中，3已结束", required = false) @RequestParam(value = "isOpenning", required = false) Integer isOpenning,
+                                    @ApiParam(value = "活动状态：1进行中，2即将开始，3已结束", required = false) @RequestParam(value = "isOpenning", required = false) Integer isOpenning,
                                     @ApiParam(value = "页索引", required = true) @PathVariable(value = "pageIndex", required = true) Integer pageIndex,
                                     @ApiParam(value = "页大小", required = true) @PathVariable(value = "pageNum", required = true) Integer pageNum) {
         logger.debug("Request RESTful API:getActivityByPage");

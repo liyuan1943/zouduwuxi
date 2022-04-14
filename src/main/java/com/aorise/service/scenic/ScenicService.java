@@ -2,6 +2,8 @@ package com.aorise.service.scenic;
 
 import com.aorise.model.activity.ActivityEntity;
 import com.aorise.model.scenic.ScenicEntity;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,17 @@ import javax.servlet.http.HttpServletRequest;
 * @version 1.0
 */
 public interface ScenicService extends IService<ScenicEntity> {
+
+    /**
+     * 分页查询景点信息
+     * @params: page
+     * @params: entity
+     * @return Page<ScenicEntity>
+     * @author cat
+     * @date 2019-07-10
+     * @modified By:
+     */
+    Page<ScenicEntity> getScenicByPage(Page<ScenicEntity> page, QueryWrapper<ScenicEntity> entity);
 
     /**
      * 根据ID查询景点信息

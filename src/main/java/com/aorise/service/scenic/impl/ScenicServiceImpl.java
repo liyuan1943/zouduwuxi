@@ -2,13 +2,19 @@ package com.aorise.service.scenic.impl;
 
 import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.checkpoint.CheckPointMapper;
+import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.mapper.scenic.ScenicMapper;
 import com.aorise.model.checkpoint.CheckPointEntity;
+import com.aorise.model.member.MemberEntity;
+import com.aorise.model.message.MessageEntity;
+import com.aorise.model.message.MessagePicEntity;
+import com.aorise.model.scenic.ScenicAchievementEntity;
 import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.common.UploadService;
 import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +32,38 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = {Exception.class})
 public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> implements ScenicService {
-
     @Autowired
     CheckPointMapper checkPointMapper;
-
+    @Autowired
+    ScenicAchievementMapper scenicAchievementMapper;
     @Autowired
     UploadService uploadService;
+
+    /**
+     * 分页查询景点信息
+     * @params: page
+     * @params: entity
+     * @return Page<ScenicEntity>
+     * @author cat
+     * @date 2019-07-10
+     * @modified By:
+     */
+    @Override
+    public Page<ScenicEntity> getScenicByPage(Page<ScenicEntity> page, QueryWrapper<ScenicEntity> entity) {
+        page = this.page(page, entity);
+        List<ScenicEntity> scenicEntities =page.getRecords();
+        if(scenicEntities.size()>0){
+            for(ScenicEntity scenicEntity : scenicEntities) {
+               //查询景点打卡人次
+                QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("scenic_id", scenicEntity.getId());
+                int count = scenicAchievementMapper.selectCount(queryWrapper);
+                scenicEntity.setFinishNum(count);
+            }
+        }
+
+        return page;
+    }
 
     /**
      * 根据ID查询景点信息

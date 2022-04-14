@@ -98,12 +98,6 @@ public class ActivityEntity {
     private Integer isOpenning;
 
     /**
-     * 完成人数
-     */
-    @TableField(exist = false)
-    private Integer finishNum;
-
-    /**
      * 关联景点集合
      */
     @TableField(exist = false)

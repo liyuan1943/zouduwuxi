@@ -20,12 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
-* 系统信息配置 控制器
-* @author cat
-* @version 1.0
-*/
+ * 系统信息配置 控制器
+ *
+ * @author cat
+ * @version 1.0
+ */
 @RestController
-@Api(value="系统信息配置模块",tags = "系统信息配置模块")
+@Api(value = "系统信息配置模块", tags = "系统信息配置模块")
 public class ConfigController {
 
     //日志打印器
@@ -41,19 +42,15 @@ public class ConfigController {
      * 查询系统信息配置信息
      * HTTP 方式：GET
      * API 路径：/api/config
-     * 方法名：getConfigByPage
+     * 方法名：getConfig
      * 方法返回类型：String
      */
-    @ApiOperation(value="查询系统信息配置信息", notes="查询系统信息配置信息",produces = "application/json")
-    @RequestMapping(value="/api/config", method= RequestMethod.GET)
-    public String getConfigByPage() {
+    @ApiOperation(value = "查询系统信息配置信息", notes = "查询系统信息配置信息", produces = "application/json")
+    @RequestMapping(value = "/api/config", method = RequestMethod.GET)
+    public String getConfig() {
         logger.debug("Request RESTful API:getConfigByPage");
 
-        ConfigEntity configEntity;
-
-            //装载查询条件
-            QueryWrapper<ConfigEntity> entity = new QueryWrapper<>();
-            configEntity = configService.getById(1);
+        ConfigEntity configEntity = configService.getById(1);
 
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", configEntity).toString();
     }
@@ -65,18 +62,18 @@ public class ConfigController {
      * 方法名：updateConfig
      * 方法返回类型：String
      */
-    @ApiOperation(value="修改系统信息配置信息", notes="修改系统信息配置信息",produces = "application/json")
-    @RequestMapping(value="/api/config/updateConfig", method= RequestMethod.POST)
+    @ApiOperation(value = "修改系统信息配置信息", notes = "修改系统信息配置信息", produces = "application/json")
+    @RequestMapping(value = "/api/config/updateConfig", method = RequestMethod.POST)
     public String updateConfig(@RequestBody @Validated ConfigEntity configEntity, HttpServletRequest request) {
         logger.debug("Request RESTful API:updateConfig");
         logger.debug("config：" + configEntity);
 
-            boolean bol = configService.updateById(configEntity);
-            if (bol) {
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "","").toString();
-            }else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();
-            }
+        boolean bol = configService.updateById(configEntity);
+        if (bol) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
     }
 
 

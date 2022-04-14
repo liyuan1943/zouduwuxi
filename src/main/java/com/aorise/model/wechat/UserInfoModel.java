@@ -8,7 +8,6 @@ import java.io.Serializable;
  * @author cat
  * @Description 用户详细信息
  * @date   2018-04-12  10:00
- * @modified By:
  */
 @Data
 public class UserInfoModel implements Serializable {

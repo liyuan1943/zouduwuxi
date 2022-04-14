@@ -62,6 +62,11 @@ public class StatisticServiceImpl implements StatisticService {
         if (timeType == null) {
             throw new ServiceException("缺少时间参数");
         }
+
+        MemberEntity member = memberService.getById(memberId);
+        if (member == null) {
+            throw new ServiceException("我的会员信息不存在");
+        }
         //装载查询条件
         QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
         if (scenicId != null) {
@@ -118,15 +123,13 @@ public class StatisticServiceImpl implements StatisticService {
 
             if (index == -1) {
                 //我的排行榜数据不存在
-                MemberEntity memberEntity = memberService.getById(memberId);
-                if (memberEntity != null) {
-                    myScenicRankVo.setNickname(memberEntity.getNickname());
-                    myScenicRankVo.setHeadPic(memberEntity.getHeadPic());
-                }
+                myScenicRankVo.setNickname(member.getNickname());
+                myScenicRankVo.setHeadPic(member.getHeadPic());
+
             } else {
                 //我的排行榜数据存在
                 myScenicRankVo = scenicRankVos.get(index);
-                myScenicRankVo.setNo(index+1);
+                myScenicRankVo.setNo(index + 1);
             }
 
             //合并我的排行榜数据和数据列表top100
@@ -135,7 +138,14 @@ public class StatisticServiceImpl implements StatisticService {
             resultScenicRankVos.addAll(scenicRankVos.subList(0, Math.min(scenicRankVos.size(), 100)));
             return resultScenicRankVos;
         }
-        return null;
+        //没有排行榜数据，只返回我的排行榜
+        List<ScenicRankVo> resultScenicRankVos = new ArrayList<>();
+        ScenicRankVo myScenicRankVo = new ScenicRankVo();
+        myScenicRankVo.setMemberId(memberId);
+        myScenicRankVo.setNickname(member.getNickname());
+        myScenicRankVo.setHeadPic(member.getHeadPic());
+        resultScenicRankVos.add(myScenicRankVo);
+        return resultScenicRankVos;
     }
 
     /**
@@ -150,6 +160,11 @@ public class StatisticServiceImpl implements StatisticService {
     public List<ScenicRankVo> getActivityRank(Map<String, Object> map) {
         Integer memberId = map.get("memberId") == null ? null : Integer.parseInt(map.get("memberId").toString());
         Integer activityId = map.get("activityId") == null ? null : Integer.parseInt(map.get("activityId").toString());
+
+        MemberEntity member= memberService.getById(memberId);
+        if (member == null) {
+            throw new ServiceException("我的会员信息不存在");
+        }
 
         //装载查询条件
         QueryWrapper<ActivityAchievementEntity> queryWrapper = new QueryWrapper<>();
@@ -197,15 +212,13 @@ public class StatisticServiceImpl implements StatisticService {
 
             if (index == -1) {
                 //我的排行榜数据不存在
-                MemberEntity memberEntity = memberService.getById(memberId);
-                if (memberEntity != null) {
-                    myScenicRankVo.setNickname(memberEntity.getNickname());
-                    myScenicRankVo.setHeadPic(memberEntity.getHeadPic());
-                }
+                myScenicRankVo.setNickname(member.getNickname());
+                myScenicRankVo.setHeadPic(member.getHeadPic());
+
             } else {
                 //我的排行榜数据存在
                 myScenicRankVo = scenicRankVos.get(index);
-                myScenicRankVo.setNo(index+1);
+                myScenicRankVo.setNo(index + 1);
             }
 
             //合并我的排行榜数据和数据列表top100
@@ -214,6 +227,13 @@ public class StatisticServiceImpl implements StatisticService {
             resultScenicRankVos.addAll(scenicRankVos.subList(0, Math.min(scenicRankVos.size(), 100)));
             return resultScenicRankVos;
         }
-        return null;
+        //没有排行榜数据，只返回我的排行榜
+        List<ScenicRankVo> resultScenicRankVos = new ArrayList<>();
+        ScenicRankVo myScenicRankVo = new ScenicRankVo();
+        myScenicRankVo.setMemberId(memberId);
+        myScenicRankVo.setNickname(member.getNickname());
+        myScenicRankVo.setHeadPic(member.getHeadPic());
+        resultScenicRankVos.add(myScenicRankVo);
+        return resultScenicRankVos;
     }
 }

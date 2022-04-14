@@ -4,7 +4,6 @@ package com.aorise.utils.json;
  * @author cat
  * @Description
  * @date  Created in 2018/6/26.
- * @modified By:
  */
 public class JsonResult {
     private String status = null;

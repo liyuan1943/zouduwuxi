@@ -77,7 +77,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
             queryWrapper.lt("expiration_date",newDay);
         }
         queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-        queryWrapper.orderByDesc("create_date");
+        queryWrapper.orderByDesc("begin_date");
+        queryWrapper.orderByDesc("expiration_date");
         page = this.page(page, queryWrapper);
 
         //查询活动是否开放

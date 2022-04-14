@@ -85,7 +85,7 @@ public class ScenicEntity {
     private List<CheckPointEntity> checkPointEntities;
 
     /**
-     * 完成人数
+     * 打卡人次
      */
     @TableField(exist = false)
     private Integer finishNum;

@@ -166,11 +166,8 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 }
             }
         } else {
-            //存在，更新打卡时间
-            CheckPointRecordEntity checkPointRecordEntityUpdate = new CheckPointRecordEntity();
-            checkPointRecordEntityUpdate.setCheckTime(Utils.dateToStr(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            checkPointRecordEntityUpdate.setId(checkPointRecord.getId());
-            bool = this.updateById(checkPointRecordEntityUpdate);
+            //存在，不能重复打卡
+            throw new ServiceException("该打卡点今天已有打卡记录");
         }
 
         if (bool) {

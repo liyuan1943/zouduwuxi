@@ -1,6 +1,7 @@
 package com.aorise.controller.scenic;
 
 import com.aorise.model.checkpoint.CheckPointEntity;
+import com.aorise.model.message.MessageEntity;
 import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.checkpoint.CheckPointService;
 import com.aorise.service.scenic.ScenicService;
@@ -62,17 +63,20 @@ public class ScenicController {
 
         Page<ScenicEntity> page = new Page<>(pageIndex, pageNum);
 
-            //装载查询条件
-            QueryWrapper<ScenicEntity> entity = new QueryWrapper<>();
-            if (StringUtils.isNotBlank(name)) {
-                entity.like("name", name);
-            }
-            if (activityId != null && activityId > 0) {
-                entity.eq("activity_id", activityId);
-            }
-            entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            entity.orderByDesc("create_date");
-            page = scenicService.page(page, entity);
+        //装载查询条件
+        QueryWrapper<ScenicEntity> entity = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(name)) {
+            entity.like("name", name);
+        }
+        if (activityId != null && activityId > 0) {
+            entity.eq("activity_id", activityId);
+        }
+        entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+        entity.orderByDesc("create_date");
+        page = scenicService.page(page, entity);
+
+        page = scenicService.getScenicByPage(page, entity);
+
 
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", page).toString();
     }
