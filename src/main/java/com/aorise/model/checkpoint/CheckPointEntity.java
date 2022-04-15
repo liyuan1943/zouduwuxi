@@ -37,6 +37,13 @@ public class CheckPointEntity {
     private String name;
 
     /**
+     * 图片
+     */
+    @ApiModelProperty(value = "图片")
+    @TableField("pic")
+    private String pic;
+
+    /**
      * 经度
      */
     @ApiModelProperty(value = "经度")

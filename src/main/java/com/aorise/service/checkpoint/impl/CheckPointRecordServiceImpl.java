@@ -116,7 +116,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 //判断是否要新增景点成就表数据
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 //打卡点是终点，则新增景点成就
-                if (checkPointEntity.getIsDestination().equals(ConstDefine.IS_DESTINATION_YES)) {
+                if (checkPointEntity.getIsDestination().equals(ConstDefine.IS_YES)) {
                     ScenicAchievementEntity scenicAchievementEntity = new ScenicAchievementEntity();
                     scenicAchievementEntity.setMemberId(checkPointRecordEntity.getMemberId());
                     scenicAchievementEntity.setScenicId(checkPointRecordEntity.getScenicId());

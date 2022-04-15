@@ -2,11 +2,12 @@ package com.aorise.service.medal.impl;
 
 import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.medal.MedalMapper;
-import com.aorise.mapper.medal.MemberMedalMapper;
+import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.model.medal.MedalEntity;
-import com.aorise.model.medal.MemberMedalEntity;
+import com.aorise.model.scenic.ScenicAchievementEntity;
 import com.aorise.service.common.UploadService;
 import com.aorise.service.medal.MedalService;
+import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,8 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 勋章 ServiceImpl层
@@ -31,7 +33,9 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
     @Autowired
     UploadService uploadService;
     @Autowired
-    MemberMedalMapper memberMedalMapper;
+    ScenicService scenicService;
+    @Autowired
+    ScenicAchievementMapper scenicAchievementMapper;
 
     /**
      * 新增勋章
@@ -44,8 +48,8 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public int addMedal(MedalEntity medalEntity) {
-        if (medalEntity.getScenicId() == 9999) {
-            //景点ID=9999的是年度勋章，判断不能添加多个相同年份的勋章
+        if (medalEntity.getIsYear() == ConstDefine.IS_YES) {
+            //判断不能添加多个相同年份的勋章
             QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("year", medalEntity.getYear());
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
@@ -74,8 +78,8 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public int updateMedal(MedalEntity medalEntity, HttpServletRequest request) {
-        if (medalEntity.getScenicId() == 0) {
-            //景点ID=0的是年度勋章，判断不能添加多个相同年份的勋章
+        if (medalEntity.getIsYear() == ConstDefine.IS_YES) {
+            //判断不能添加多个相同年份的勋章
             QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("year", medalEntity.getYear());
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
@@ -111,14 +115,40 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public List<MedalEntity> getMedalByMemberId(String memberId) {
-        QueryWrapper<MemberMedalEntity> queryWrapper = new QueryWrapper<>();
+        //查询所有勋章
+        QueryWrapper<MedalEntity> medalEntityQueryWrapper = new QueryWrapper<>();
+        medalEntityQueryWrapper.orderByAsc("sort");
+        List<MedalEntity> medalEntities = this.list(medalEntityQueryWrapper);
+
+        //查询该会员景点成就
+        QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("member_id", memberId);
-        List<MemberMedalEntity> memberMedalEntities = memberMedalMapper.selectList(queryWrapper);
-        List<MedalEntity> medalEntities = new ArrayList<>();
-        for(MemberMedalEntity memberMedalEntity : memberMedalEntities){
-            //查询勋章信息
-            MedalEntity medalEntity= this.getById(memberMedalEntity.getMedalId());
-            medalEntities.add(medalEntity);
+        List<ScenicAchievementEntity> scenicAchievementEntities = scenicAchievementMapper.selectList(queryWrapper);
+        for(MedalEntity medalEntity : medalEntities){
+            if(medalEntity.getIsYear()==ConstDefine.IS_NO) {
+                //如果不是年度勋章
+                medalEntity.setIsGet(ConstDefine.IS_NO);
+                for (ScenicAchievementEntity scenicAchievementEntity : scenicAchievementEntities) {
+                    //判断勋章关联的景点是否已完成成就
+                    if(medalEntity.getScenicId()!= null && medalEntity.getScenicId().equals(scenicAchievementEntity.getScenicId().toString())){
+                        medalEntity.setIsGet(ConstDefine.IS_YES);
+                        break;
+                    }
+                }
+            }else {
+                //如果是年度勋章
+                //获取勋章关联景点集合
+                String [] scenicIdArr = medalEntity.getScenicId().split(",");
+                List<String> scenicIdList = Arrays.asList(scenicIdArr);
+                //获取会员完成成就的景点集合
+                List<String> finishScenicIdList = scenicAchievementEntities.stream().map(e->e.getScenicId().toString()).collect(Collectors.toList());
+                boolean isHave = finishScenicIdList.containsAll(scenicIdList);
+                if(isHave){
+                    medalEntity.setIsGet(ConstDefine.IS_YES);
+                }else {
+                    medalEntity.setIsGet(ConstDefine.IS_NO);
+                }
+            }
         }
         return medalEntities;
     }

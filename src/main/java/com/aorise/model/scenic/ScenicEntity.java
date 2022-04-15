@@ -33,7 +33,7 @@ public class ScenicEntity {
     private String name;
 
     /**
-     * 景点背景图
+     * 景点封面图
      */
     @ApiModelProperty(value = "景点背景图")
     @TableField("bgi")

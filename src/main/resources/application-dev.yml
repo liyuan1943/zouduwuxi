@@ -10,13 +10,12 @@ spring:
       max-request-size: 1MB
       enabled: true
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/zouduhh?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
-    username: root
-    password: 123456
-
-    #    url: jdbc:mysql://sql.l212.vhostgo.com/zouduhh?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
-    #    username: zouduhh
-    #    password: h7jesqu4
+#    url: jdbc:mysql://127.0.0.1:3306/zouduhh?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+#    username: root
+#    password: 123456
+    url: jdbc:mysql://sql.l212.vhostgo.com/zouduhh?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: zouduhh
+    password: h7jesqu4
     driver-class-name: com.mysql.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:

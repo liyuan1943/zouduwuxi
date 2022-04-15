@@ -33,7 +33,7 @@ public class ActivityEntity {
     private String name;
 
     /**
-     * 活动背景图
+     * 活动封面图
      */
     @ApiModelProperty(value = "活动背景图")
     @TableField("bgi")
@@ -92,7 +92,7 @@ public class ActivityEntity {
     private String scenicIds;
 
     /**
-     * 活动状态：1未开始，2进行中，3已结束
+     * 活动状态：1进行中，2即将开始，3已结束
      */
     @TableField(exist = false)
     private Integer isOpenning;

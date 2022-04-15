@@ -41,9 +41,10 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
 
     /**
      * 分页查询景点信息
+     *
+     * @return Page<ScenicEntity>
      * @params: page
      * @params: entity
-     * @return Page<ScenicEntity>
      * @author cat
      * @date 2019-07-10
      * @modified By:
@@ -51,10 +52,10 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
     @Override
     public Page<ScenicEntity> getScenicByPage(Page<ScenicEntity> page, QueryWrapper<ScenicEntity> entity) {
         page = this.page(page, entity);
-        List<ScenicEntity> scenicEntities =page.getRecords();
-        if(scenicEntities.size()>0){
-            for(ScenicEntity scenicEntity : scenicEntities) {
-               //查询景点打卡人次
+        List<ScenicEntity> scenicEntities = page.getRecords();
+        if (scenicEntities.size() > 0) {
+            for (ScenicEntity scenicEntity : scenicEntities) {
+                //查询景点打卡人次
                 QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("scenic_id", scenicEntity.getId());
                 int count = scenicAchievementMapper.selectCount(queryWrapper);
@@ -67,10 +68,11 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
 
     /**
      * 根据ID查询景点信息
+     *
      * @param id 景点ID
      * @return ScenicEntity
      * @author cat
-     * @date  Created in 2018/9/20 9:27
+     * @date Created in 2018/9/20 9:27
      * @modified By:
      */
     @Override
@@ -79,12 +81,12 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
         entity.eq("id", id);
         entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
         ScenicEntity scenicEntity = this.getOne(entity);
-        if(scenicEntity != null){
+        if (scenicEntity != null) {
             QueryWrapper<CheckPointEntity> checkPointEntityQueryWrapper = new QueryWrapper<>();
             checkPointEntityQueryWrapper.eq("scenic_id", id);
             checkPointEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             List<CheckPointEntity> checkPointEntities = checkPointMapper.selectList(checkPointEntityQueryWrapper);
-            if(checkPointEntities.size()>0){
+            if (checkPointEntities.size() > 0) {
                 scenicEntity.setCheckPointEntities(checkPointEntities);
             }
         }
@@ -103,13 +105,13 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
     @Override
     public int addScenic(ScenicEntity scenicEntity) {
         //验证一个景点有且只能有一个终点打卡点
-        int sum =0;
+        int sum = 0;
         for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
-            if(checkPointEntity.getIsDestination()==ConstDefine.IS_DESTINATION_YES){
+            if (checkPointEntity.getIsDestination() == ConstDefine.IS_YES) {
                 sum++;
             }
         }
-        if(sum!= 1){
+        if (sum != 1) {
             throw new ServiceException("景点必须且只能设置一个终点打卡点");
         }
 
@@ -130,7 +132,7 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
      * 修改景点
      *
      * @param scenicEntity 景点
-     * @param request request
+     * @param request      request
      * @return int 影响行数
      * @author cat
      * @date Created in 2018/9/20 9:27
@@ -139,13 +141,13 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
     @Override
     public int updateScenic(ScenicEntity scenicEntity, HttpServletRequest request) {
         //验证一个景点有且只能有一个终点打卡点
-        int sum =0;
+        int sum = 0;
         for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
-            if(checkPointEntity.getIsDestination()==ConstDefine.IS_DESTINATION_YES){
+            if (checkPointEntity.getIsDestination() == ConstDefine.IS_YES) {
                 sum++;
             }
         }
-        if(sum!= 1){
+        if (sum != 1) {
             throw new ServiceException("景点必须且只能设置一个终点打卡点");
         }
 
@@ -162,13 +164,18 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
 
             //查询旧打卡点
             QueryWrapper<CheckPointEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("scenic_id",scenicEntity.getId());
-            List<CheckPointEntity> checkPointEntities =checkPointMapper.selectList(queryWrapper);
-            if(checkPointEntities.size()>0){
+            queryWrapper.eq("scenic_id", scenicEntity.getId());
+            List<CheckPointEntity> checkPointEntities = checkPointMapper.selectList(queryWrapper);
+            if (checkPointEntities.size() > 0) {
                 //删除旧的打卡点
-                for(CheckPointEntity checkPointEntity : checkPointEntities){
+                for (CheckPointEntity checkPointEntity : checkPointEntities) {
                     checkPointEntity.setIsDelete(ConstDefine.IS_DELETE);
-                    checkPointMapper.updateById(checkPointEntity);
+                    int i = checkPointMapper.updateById(checkPointEntity);
+                    if (i > 0) {
+                        //删除图片文件
+                        uploadService.deletefile(checkPointEntity.getPic(), request);
+                    }
+
                 }
             }
 
@@ -186,7 +193,7 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
     /**
      * 删除景点
      *
-     * @param id 景点ID
+     * @param id      景点ID
      * @param request request
      * @return int 影响行数
      * @author cat
@@ -195,7 +202,7 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
      */
     @Override
     public int deleteScenic(int id, HttpServletRequest request) {
-        ScenicEntity scenicEntity =new ScenicEntity();
+        ScenicEntity scenicEntity = new ScenicEntity();
         scenicEntity.setId(id);
         scenicEntity.setIsDelete(ConstDefine.IS_DELETE);
         boolean bol = this.updateById(scenicEntity);
@@ -207,14 +214,18 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
 
             //查询旧打卡点
             QueryWrapper<CheckPointEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("scenic_id",id);
-            queryWrapper.eq("is_delete",ConstDefine.IS_NOT_DELETE);
-            List<CheckPointEntity> checkPointEntities =checkPointMapper.selectList(queryWrapper);
-            if(checkPointEntities.size()>0){
+            queryWrapper.eq("scenic_id", id);
+            queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+            List<CheckPointEntity> checkPointEntities = checkPointMapper.selectList(queryWrapper);
+            if (checkPointEntities.size() > 0) {
                 //删除旧的打卡点
-                for(CheckPointEntity checkPointEntity : checkPointEntities){
+                for (CheckPointEntity checkPointEntity : checkPointEntities) {
                     checkPointEntity.setIsDelete(ConstDefine.IS_DELETE);
-                    checkPointMapper.updateById(checkPointEntity);
+                    int i = checkPointMapper.updateById(checkPointEntity);
+                    if (i > 0) {
+                        //删除图片文件
+                        uploadService.deletefile(checkPointEntity.getPic(), request);
+                    }
                 }
             }
             return 1;

@@ -25,14 +25,15 @@ public interface ConstDefine {
     int UUID_BITS = 20;
     int UUID_ORDER = 32;
 
-    //活动状态：1未开始，2进行中，3已结束
-    int ACTIVITY_WAIT = 1;
-    int ACTIVITY_OPENNING = 2;
+    //活动状态：1进行中，2即将开始，3已结束
+    int ACTIVITY_OPENNING = 1;
+    int ACTIVITY_WAIT = 2;
     int ACTIVITY_END = 3;
 
-    //是否终点：1是，2否
-    int IS_DESTINATION_YES = 1;
-    int IS_DESTINATION_NO = 2;
+    //是否：1是，2否
+    int IS_YES = 1;
+    int IS_NO = 2;
+
 
     //正式环境服务地址
     String PRO_WEBSITE = "https://www.tindoe.com/apiserver";

@@ -1,7 +1,6 @@
 package com.aorise.controller.medal;
 
 import com.aorise.model.medal.MedalEntity;
-import com.aorise.model.medal.MemberMedalEntity;
 import com.aorise.service.medal.MedalService;
 import com.aorise.service.common.UploadService;
 import com.aorise.utils.StatusDefine;
@@ -173,9 +172,7 @@ public class MedalController {
         logger.debug("Request RESTful API:getMedalByMemberId");
         logger.debug("memberId：" + memberId);
 
-        List<MedalEntity> medalEntities;
-
-            medalEntities = medalService.getMedalByMemberId(memberId);
+        List<MedalEntity> medalEntities= medalService.getMedalByMemberId(memberId);
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntities).toString();
 
     }
