@@ -10,10 +10,14 @@ import com.aorise.model.activity.ActivityEntity;
 import com.aorise.model.activity.ActivityScenicEntity;
 import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.checkpoint.CheckPointRecordEntity;
+import com.aorise.model.member.MemberEntity;
 import com.aorise.model.scenic.ScenicAchievementEntity;
+import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.activity.ActivityService;
 import com.aorise.service.checkpoint.CheckPointRecordService;
 import com.aorise.service.checkpoint.CheckPointService;
+import com.aorise.service.member.MemberService;
+import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.Utils;
 import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -48,6 +52,10 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
     ActivityScenicMapper activityScenicMapper;
     @Autowired
     ActivityService activityService;
+    @Autowired
+    ScenicService scenicService;
+    @Autowired
+    MemberService memberService;
 
     /**
      * 根据条件分页查询打卡记录
@@ -76,13 +84,23 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
         queryWrapper.orderByDesc("create_date");
         page = this.page(page, queryWrapper);
 
-        //查询打卡点名称
         List<CheckPointRecordEntity> entities = page.getRecords();
         if (entities != null) {
             for (CheckPointRecordEntity checkPointRecordEntity : entities) {
+                //查询打卡点名称
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 if (checkPointEntity != null) {
                     checkPointRecordEntity.setCheckPointName(checkPointEntity.getName());
+                }
+                //查询景点名称
+                ScenicEntity scenicEntity = scenicService.getById(checkPointRecordEntity.getScenicId());
+                if (scenicEntity != null) {
+                    checkPointRecordEntity.setScenicName(scenicEntity.getName());
+                }
+                //查询会员昵称
+                MemberEntity memberEntity = memberService.getById(checkPointRecordEntity.getMemberId());
+                if (memberEntity != null) {
+                    checkPointRecordEntity.setNickname(memberEntity.getNickname());
                 }
             }
         }

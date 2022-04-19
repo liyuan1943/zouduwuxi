@@ -52,6 +52,7 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
             //判断不能添加多个相同年份的勋章
             QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("year", medalEntity.getYear());
+            queryWrapper.eq("is_year", ConstDefine.IS_YES);
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             MedalEntity medal = this.getOne(queryWrapper);
             if (medal != null) {
@@ -82,6 +83,7 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
             //判断不能添加多个相同年份的勋章
             QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("year", medalEntity.getYear());
+            queryWrapper.eq("is_year", ConstDefine.IS_YES);
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             MedalEntity medal = this.getOne(queryWrapper);
             if (medal != null) {

@@ -88,4 +88,18 @@ public class CheckPointRecordEntity {
     @ApiModelProperty(value = "打卡点名称")
     @TableField(exist = false)
     private String checkPointName;
+
+    /**
+     * 景点名称
+     */
+    @ApiModelProperty(value = "景点名称")
+    @TableField(exist = false)
+    private String scenicName;
+
+    /**
+     * 会员昵称
+     */
+    @ApiModelProperty(value = "打卡点名称")
+    @TableField(exist = false)
+    private String nickname;
 }
