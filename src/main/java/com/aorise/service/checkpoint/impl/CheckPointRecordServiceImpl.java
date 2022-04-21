@@ -91,6 +91,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 if (checkPointEntity != null) {
                     checkPointRecordEntity.setCheckPointName(checkPointEntity.getName());
+                    checkPointRecordEntity.setIsDestination(checkPointEntity.getIsDestination());
                 }
                 //查询景点名称
                 ScenicEntity scenicEntity = scenicService.getById(checkPointRecordEntity.getScenicId());

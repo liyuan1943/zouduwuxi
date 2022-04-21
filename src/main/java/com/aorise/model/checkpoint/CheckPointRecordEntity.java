@@ -90,6 +90,13 @@ public class CheckPointRecordEntity {
     private String checkPointName;
 
     /**
+     * 是否终点：1是，2否
+     */
+    @ApiModelProperty(value = "是否终点：1是，2否")
+    @TableField(exist = false)
+    private Integer isDestination;
+
+    /**
      * 景点名称
      */
     @ApiModelProperty(value = "景点名称")
