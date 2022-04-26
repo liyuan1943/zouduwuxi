@@ -48,17 +48,6 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public int addMedal(MedalEntity medalEntity) {
-        if (medalEntity.getIsYear() == ConstDefine.IS_YES) {
-            //判断不能添加多个相同年份的勋章
-            QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("year", medalEntity.getYear());
-            queryWrapper.eq("is_year", ConstDefine.IS_YES);
-            queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            MedalEntity medal = this.getOne(queryWrapper);
-            if (medal != null) {
-                throw new ServiceException(medalEntity.getYear() + "年度勋章已存在");
-            }
-        }
         boolean bol = this.save(medalEntity);
         if (bol) {
             return 1;
@@ -79,27 +68,9 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public int updateMedal(MedalEntity medalEntity, HttpServletRequest request) {
-        if (medalEntity.getIsYear() == ConstDefine.IS_YES) {
-            //判断不能添加多个相同年份的勋章
-            QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("year", medalEntity.getYear());
-            queryWrapper.eq("is_year", ConstDefine.IS_YES);
-            queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            MedalEntity medal = this.getOne(queryWrapper);
-            if (medal != null) {
-                if (!medal.getId().equals(medalEntity.getId())) {
-                    throw new ServiceException(medalEntity.getYear() + "年度勋章已存在");
-                }
-            }
-        }
-        MedalEntity b = this.getById(medalEntity.getId());
         medalEntity.setIsDelete(ConstDefine.IS_NOT_DELETE);
         boolean bol = this.updateById(medalEntity);
         if (bol) {
-            if (!b.getPic().equals(medalEntity.getPic())) {
-                //删除图片文件
-                uploadService.deletefile(b.getPic(), request);
-            }
             return 1;
         } else {
             return -1;
@@ -126,30 +97,17 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
         QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("member_id", memberId);
         List<ScenicAchievementEntity> scenicAchievementEntities = scenicAchievementMapper.selectList(queryWrapper);
-        for(MedalEntity medalEntity : medalEntities){
-            if(medalEntity.getIsYear()==ConstDefine.IS_NO) {
-                //如果不是年度勋章
+        for (MedalEntity medalEntity : medalEntities) {
+            //获取勋章关联景点集合
+            String[] scenicIdArr = medalEntity.getScenicId().split(",");
+            List<String> scenicIdList = Arrays.asList(scenicIdArr);
+            //获取会员完成成就的景点集合
+            List<String> finishScenicIdList = scenicAchievementEntities.stream().map(e -> e.getScenicId().toString()).collect(Collectors.toList());
+            boolean isHave = finishScenicIdList.containsAll(scenicIdList);
+            if (isHave) {
+                medalEntity.setIsGet(ConstDefine.IS_YES);
+            } else {
                 medalEntity.setIsGet(ConstDefine.IS_NO);
-                for (ScenicAchievementEntity scenicAchievementEntity : scenicAchievementEntities) {
-                    //判断勋章关联的景点是否已完成成就
-                    if(medalEntity.getScenicId()!= null && medalEntity.getScenicId().equals(scenicAchievementEntity.getScenicId().toString())){
-                        medalEntity.setIsGet(ConstDefine.IS_YES);
-                        break;
-                    }
-                }
-            }else {
-                //如果是年度勋章
-                //获取勋章关联景点集合
-                String [] scenicIdArr = medalEntity.getScenicId().split(",");
-                List<String> scenicIdList = Arrays.asList(scenicIdArr);
-                //获取会员完成成就的景点集合
-                List<String> finishScenicIdList = scenicAchievementEntities.stream().map(e->e.getScenicId().toString()).collect(Collectors.toList());
-                boolean isHave = finishScenicIdList.containsAll(scenicIdList);
-                if(isHave){
-                    medalEntity.setIsGet(ConstDefine.IS_YES);
-                }else {
-                    medalEntity.setIsGet(ConstDefine.IS_NO);
-                }
             }
         }
         return medalEntities;

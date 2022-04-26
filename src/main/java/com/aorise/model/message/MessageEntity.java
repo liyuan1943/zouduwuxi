@@ -1,13 +1,13 @@
 package com.aorise.model.message;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.joda.time.DateTime;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,6 +66,13 @@ public class MessageEntity {
     @ApiModelProperty(value = "打卡地点")
     @TableField("location")
     private String location;
+
+    /**
+     * 置顶时间
+     */
+    @ApiModelProperty(value = "置顶时间")
+    @TableField("top_time")
+    private Date topTime;
 
     /**
      * 是否删除：-1删除，1正常

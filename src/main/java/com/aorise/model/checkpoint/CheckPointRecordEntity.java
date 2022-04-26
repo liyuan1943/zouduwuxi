@@ -23,13 +23,6 @@ public class CheckPointRecordEntity {
     private Integer id;
 
     /**
-     * 景点ID
-     */
-    @ApiModelProperty(value = "景点ID")
-    @TableField("scenic_id")
-    private Integer scenicId;
-
-    /**
      * 打卡点ID
      */
     @ApiModelProperty(value = "打卡点ID")
@@ -88,13 +81,6 @@ public class CheckPointRecordEntity {
     @ApiModelProperty(value = "打卡点名称")
     @TableField(exist = false)
     private String checkPointName;
-
-    /**
-     * 是否终点：1是，2否
-     */
-    @ApiModelProperty(value = "是否终点：1是，2否")
-    @TableField(exist = false)
-    private Integer isDestination;
 
     /**
      * 景点名称

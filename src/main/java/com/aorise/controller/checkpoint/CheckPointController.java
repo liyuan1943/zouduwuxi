@@ -55,13 +55,10 @@ public class CheckPointController {
      */
     @ApiOperation(value = "查询所有打卡点信息", notes = "查询所有打卡点信息", produces = "application/json")
     @RequestMapping(value = "/api/checkPoint/getAllCheckPoint", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String getAllCheckPoint() {
+    public String getAllCheckPoint(@ApiParam(value = "景点ID", required = false) @RequestParam(value = "scenicId", required = false) Integer scenicId) {
         logger.debug("Request RESTful API:getAllCheckPoint");
-        List<CheckPointEntity> checkPointEntities = null;
-
-            QueryWrapper<CheckPointEntity> checkPointEntityQueryWrapper = new QueryWrapper<>();
-            checkPointEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            checkPointEntities = checkPointService.list(checkPointEntityQueryWrapper);
+        logger.debug("scenicId：" + scenicId);
+        List<CheckPointEntity> checkPointEntities = checkPointService.getAllCheckPoint(scenicId);
 
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", checkPointEntities).toString();
     }

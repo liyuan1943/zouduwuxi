@@ -52,13 +52,6 @@ public class MedalEntity {
     private String pic;
 
     /**
-     * 是否年份勋章：1是，2否
-     */
-    @ApiModelProperty(value = "是否年份勋章：1是，2否")
-    @TableField("is_year")
-    private Integer isYear;
-
-    /**
      * 排序
      */
     @ApiModelProperty(value = "排序")

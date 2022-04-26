@@ -7,6 +7,7 @@ import com.aorise.utils.StatusDefineMessage;
 import com.aorise.utils.define.ConstDefine;
 import com.aorise.utils.json.JsonResponseData;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
+import java.util.Date;
 
 /**
  * 留言 控制器
@@ -66,6 +69,7 @@ public class MessageController {
             entity.like("content", key);
         }
         entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+        entity.orderByDesc("top_time");
         entity.orderByDesc("create_date");
 
         page = messageService.getMessageByPage(page, entity);
@@ -116,4 +120,34 @@ public class MessageController {
         }
     }
 
+    /**
+     * 留言信息置顶、取消置顶
+     * HTTP 方式：POST
+     * API 路径：/api/message/updateMessageIsTop
+     * 方法名：updateMessageIsTop
+     * 方法返回类型：String
+     */
+    @ApiOperation(value = "留言信息置顶、取消置顶", notes = "留言信息置顶、取消置顶", produces = "application/json")
+    @RequestMapping(value = "/api/message/updateMessageIsTop", method = RequestMethod.POST)
+    public String updateMessageIsTop(@ApiParam(value = "主键ID", required = true) @RequestParam(value = "id", required = true) Integer id,
+                                     @ApiParam(value = "是否置顶：1是，2否", required = true) @RequestParam(value = "isTop", required = true) Integer isTop) {
+        logger.debug("Request RESTful API:updateMessageIsTop");
+        logger.debug("id：" + id);
+        logger.debug("isTop：" + isTop);
+
+        UpdateWrapper<MessageEntity> updateWrapper = new UpdateWrapper();
+        updateWrapper.eq("id", id);
+        if (isTop.equals(1)) {
+            updateWrapper.set("top_time", new Date());
+        } else {
+            updateWrapper.set("top_time", null);
+        }
+        boolean bol = messageService.update(updateWrapper);
+        if (bol) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
+
+    }
 }

@@ -75,7 +75,6 @@ public class UploadController {
 
         logger.debug(fileName);
 
-
             boolean deleteFile = uploadService.deleteImg(fileName,request);
             //删除方法
             if (deleteFile) {

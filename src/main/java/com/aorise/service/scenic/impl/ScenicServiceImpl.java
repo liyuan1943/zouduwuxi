@@ -2,18 +2,23 @@ package com.aorise.service.scenic.impl;
 
 import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.checkpoint.CheckPointMapper;
+import com.aorise.mapper.scenic.RouteCheckPointMapper;
+import com.aorise.mapper.scenic.RouteMapper;
 import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.mapper.scenic.ScenicMapper;
 import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.member.MemberEntity;
 import com.aorise.model.message.MessageEntity;
 import com.aorise.model.message.MessagePicEntity;
+import com.aorise.model.scenic.RouteCheckPointEntity;
+import com.aorise.model.scenic.RouteEntity;
 import com.aorise.model.scenic.ScenicAchievementEntity;
 import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.common.UploadService;
 import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +26,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 景点 ServiceImpl层
+ * 景点路线 ServiceImpl层
  *
  * @author cat
  * @version 1.0
@@ -38,6 +44,10 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
     ScenicAchievementMapper scenicAchievementMapper;
     @Autowired
     UploadService uploadService;
+    @Autowired
+    RouteMapper routeMapper;
+    @Autowired
+    RouteCheckPointMapper routeCheckPointMapper;
 
     /**
      * 分页查询景点信息
@@ -82,12 +92,29 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
         entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
         ScenicEntity scenicEntity = this.getOne(entity);
         if (scenicEntity != null) {
-            QueryWrapper<CheckPointEntity> checkPointEntityQueryWrapper = new QueryWrapper<>();
-            checkPointEntityQueryWrapper.eq("scenic_id", id);
-            checkPointEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            List<CheckPointEntity> checkPointEntities = checkPointMapper.selectList(checkPointEntityQueryWrapper);
-            if (checkPointEntities.size() > 0) {
-                scenicEntity.setCheckPointEntities(checkPointEntities);
+            //查询路线
+            QueryWrapper<RouteEntity> routeEntityQueryWrapper = new QueryWrapper<>();
+            routeEntityQueryWrapper.eq("scenic_id", id);
+            routeEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+            List<RouteEntity> routeEntities = routeMapper.selectList(routeEntityQueryWrapper);
+            if (routeEntities.size() > 0) {
+                scenicEntity.setRouteEntities(routeEntities);
+            }
+
+            //查询打卡点
+            for (RouteEntity routeEntity : routeEntities) {
+                //查询打卡点集合
+                List<CheckPointEntity> checkPointEntities = new ArrayList<>();
+                QueryWrapper<RouteCheckPointEntity> routeCheckPointEntityQueryWrapper = new QueryWrapper<>();
+                routeCheckPointEntityQueryWrapper.eq("scenic_id", id);
+                routeCheckPointEntityQueryWrapper.eq("route_id", routeEntity.getId());
+                routeCheckPointEntityQueryWrapper.orderByAsc("no");
+                List<RouteCheckPointEntity> routeCheckPointEntities = routeCheckPointMapper.selectList(routeCheckPointEntityQueryWrapper);
+                for (RouteCheckPointEntity routeCheckPointEntity : routeCheckPointEntities) {
+                    CheckPointEntity checkPointEntity = checkPointMapper.selectById(routeCheckPointEntity.getCheckPointId());
+                    checkPointEntities.add(checkPointEntity);
+                }
+                routeEntity.setCheckPointEntities(checkPointEntities);
             }
         }
         return scenicEntity;
@@ -104,28 +131,13 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
      */
     @Override
     public int addScenic(ScenicEntity scenicEntity) {
-        //验证一个景点有且只能有一个终点打卡点
-        int sum = 0;
-        for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
-            if (checkPointEntity.getIsDestination() == ConstDefine.IS_YES) {
-                sum++;
-            }
-        }
-        if (sum != 1) {
-            throw new ServiceException("景点必须且只能设置一个终点打卡点");
-        }
 
         boolean bol = this.save(scenicEntity);
-        if (bol) {
-            //新增打卡点
-            for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
-                checkPointEntity.setScenicId(scenicEntity.getId());
-                checkPointMapper.insert(checkPointEntity);
-            }
-            return 1;
-        } else {
-            return -1;
+        if (!bol) {
+            throw new ServiceException("新增景点失败。");
         }
+
+        return 1;
     }
 
     /**
@@ -140,50 +152,8 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
      */
     @Override
     public int updateScenic(ScenicEntity scenicEntity, HttpServletRequest request) {
-        //验证一个景点有且只能有一个终点打卡点
-        int sum = 0;
-        for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
-            if (checkPointEntity.getIsDestination() == ConstDefine.IS_YES) {
-                sum++;
-            }
-        }
-        if (sum != 1) {
-            throw new ServiceException("景点必须且只能设置一个终点打卡点");
-        }
-
-        ScenicEntity oldScenic = this.getById(scenicEntity.getId());
         boolean bol = this.updateById(scenicEntity);
         if (bol) {
-            //删除图片文件
-            if (!oldScenic.getBgi().equals(scenicEntity.getBgi())) {
-                uploadService.deletefile(oldScenic.getBgi(), request);
-            }
-            if (!oldScenic.getPic().equals(scenicEntity.getPic())) {
-                uploadService.deletefile(oldScenic.getPic(), request);
-            }
-
-            //查询旧打卡点
-            QueryWrapper<CheckPointEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("scenic_id", scenicEntity.getId());
-            List<CheckPointEntity> checkPointEntities = checkPointMapper.selectList(queryWrapper);
-            if (checkPointEntities.size() > 0) {
-                //删除旧的打卡点
-                for (CheckPointEntity checkPointEntity : checkPointEntities) {
-                    checkPointEntity.setIsDelete(ConstDefine.IS_DELETE);
-                    int i = checkPointMapper.updateById(checkPointEntity);
-                    if (i > 0) {
-                        //删除图片文件
-                        uploadService.deletefile(checkPointEntity.getPic(), request);
-                    }
-
-                }
-            }
-
-            //新增打卡点
-            for (CheckPointEntity checkPointEntity : scenicEntity.getCheckPointEntities()) {
-                checkPointEntity.setScenicId(scenicEntity.getId());
-                checkPointMapper.insert(checkPointEntity);
-            }
             return 1;
         } else {
             return -1;
@@ -212,19 +182,32 @@ public class ScenicServiceImpl extends ServiceImpl<ScenicMapper, ScenicEntity> i
             uploadService.deletefile(oldScenic.getBgi(), request);
             uploadService.deletefile(oldScenic.getPic(), request);
 
-            //查询旧打卡点
-            QueryWrapper<CheckPointEntity> queryWrapper = new QueryWrapper<>();
+            //查询旧的路线
+            QueryWrapper<RouteEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("scenic_id", id);
             queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            List<CheckPointEntity> checkPointEntities = checkPointMapper.selectList(queryWrapper);
-            if (checkPointEntities.size() > 0) {
-                //删除旧的打卡点
-                for (CheckPointEntity checkPointEntity : checkPointEntities) {
-                    checkPointEntity.setIsDelete(ConstDefine.IS_DELETE);
-                    int i = checkPointMapper.updateById(checkPointEntity);
+            List<RouteEntity> routeEntities = routeMapper.selectList(queryWrapper);
+            if (routeEntities.size() > 0) {
+                //删除旧的路线
+                for (RouteEntity routeEntity : routeEntities) {
+                    routeEntity.setIsDelete(ConstDefine.IS_DELETE);
+                    int i = routeMapper.updateById(routeEntity);
                     if (i > 0) {
                         //删除图片文件
-                        uploadService.deletefile(checkPointEntity.getPic(), request);
+                        uploadService.deletefile(routeEntity.getPic(), request);
+                    }else {
+                        throw new ServiceException("删除路线失败。");
+                    }
+                    //查询该路线旧的打卡点关系
+                    QueryWrapper<RouteCheckPointEntity> routeCheckPointEntityQueryWrapper = new QueryWrapper<>();
+                    routeCheckPointEntityQueryWrapper.eq("route_id", routeEntity.getId());
+                    List<RouteCheckPointEntity> routeCheckPointEntities = routeCheckPointMapper.selectList(routeCheckPointEntityQueryWrapper);
+                    for (RouteCheckPointEntity routeCheckPointEntity : routeCheckPointEntities) {
+                        //删除旧的关系
+                        int iRet = routeCheckPointMapper.deleteById(routeCheckPointEntity.getId());
+                        if (iRet <= 0) {
+                            throw new ServiceException("删除路线打卡点关系失败。");
+                        }
                     }
                 }
             }

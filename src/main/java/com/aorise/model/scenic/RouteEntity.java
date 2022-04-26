@@ -11,13 +11,13 @@ import lombok.Data;
 import java.util.List;
 
 /**
-* 景点
+* 景点路线表
 * @author cat
 * @version 1.0
 */
-@TableName("scenic")
+@TableName("route")
 @Data
-public class ScenicEntity {
+public class RouteEntity {
 
     /**
      * 主键
@@ -26,39 +26,25 @@ public class ScenicEntity {
     private Integer id;
 
     /**
-     * 景点名称
+     * 景点ID
      */
-    @ApiModelProperty(value = "景点名称")
+    @ApiModelProperty(value = "景点ID")
+    @TableField("scenic_id")
+    private Integer scenicId;
+
+    /**
+     * 路线名称
+     */
+    @ApiModelProperty(value = "路线名称")
     @TableField("name")
     private String name;
 
     /**
-     * 景点封面图
+     * 图片
      */
-    @ApiModelProperty(value = "景点背景图")
-    @TableField("bgi")
-    private String bgi;
-
-    /**
-     * 景点主图
-     */
-    @ApiModelProperty(value = "景点主图")
+    @ApiModelProperty(value = "图片")
     @TableField("pic")
     private String pic;
-
-    /**
-     * 景点简介
-     */
-    @ApiModelProperty(value = "景点简介")
-    @TableField("intro")
-    private String intro;
-
-    /**
-     * 描述
-     */
-    @ApiModelProperty(value = "描述")
-    @TableField("description")
-    private String description;
 
     /**
      * 是否删除：-1删除，1正常
@@ -79,14 +65,9 @@ public class ScenicEntity {
     private String editDate;
 
     /**
-     * 路线集合
+     * 打卡点集合
      */
     @TableField(exist = false)
-    private List<RouteEntity> routeEntities;
+    private List<CheckPointEntity> checkPointEntities;
 
-    /**
-     * 打卡人次
-     */
-    @TableField(exist = false)
-    private Integer finishNum;
 }

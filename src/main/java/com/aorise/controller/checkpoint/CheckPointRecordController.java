@@ -1,9 +1,11 @@
 package com.aorise.controller.checkpoint;
 
 import com.aorise.model.checkpoint.CheckPointRecordEntity;
+import com.aorise.model.medal.MedalEntity;
 import com.aorise.service.checkpoint.CheckPointRecordService;
 import com.aorise.utils.StatusDefine;
 import com.aorise.utils.StatusDefineMessage;
+import com.aorise.utils.define.ConstDefine;
 import com.aorise.utils.json.JsonResponseData;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,4 +88,28 @@ public class CheckPointRecordController {
         }
     }
 
+    /**
+     * 删除打卡记录
+     * HTTP 方式：POST
+     * API 路径：/api/checkPointRecord/id/{id}
+     * 方法名：deleteCheckPointRecord
+     * 方法返回类型：String
+     */
+    @ApiOperation(value = "删除打卡记录", notes = "删除打卡记录", produces = "application/json")
+    @RequestMapping(value = "/api/checkPointRecord/id/{id}", method = RequestMethod.POST)
+    public String deleteCheckPointRecord(@ApiParam(value = "主键ID", required = true) @PathVariable(value = "id", required = true) Integer id) {
+        logger.debug("Request RESTful API:deleteCheckPointRecord");
+        logger.debug("id：" + id);
+
+        CheckPointRecordEntity checkPointRecordEntity = new CheckPointRecordEntity();
+        checkPointRecordEntity.setIsDelete(ConstDefine.IS_DELETE);
+        checkPointRecordEntity.setId(id);
+        boolean bool = checkPointRecordService.updateById(checkPointRecordEntity);
+
+        if (bool) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
+    }
 }

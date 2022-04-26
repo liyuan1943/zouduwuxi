@@ -4,6 +4,8 @@ import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.activity.ActivityAchievementMapper;
 import com.aorise.mapper.activity.ActivityScenicMapper;
 import com.aorise.mapper.checkpoint.CheckPointRecordMapper;
+import com.aorise.mapper.scenic.RouteCheckPointMapper;
+import com.aorise.mapper.scenic.RouteMapper;
 import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.model.activity.ActivityAchievementEntity;
 import com.aorise.model.activity.ActivityEntity;
@@ -11,6 +13,8 @@ import com.aorise.model.activity.ActivityScenicEntity;
 import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.checkpoint.CheckPointRecordEntity;
 import com.aorise.model.member.MemberEntity;
+import com.aorise.model.scenic.RouteCheckPointEntity;
+import com.aorise.model.scenic.RouteEntity;
 import com.aorise.model.scenic.ScenicAchievementEntity;
 import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.activity.ActivityService;
@@ -20,6 +24,7 @@ import com.aorise.service.member.MemberService;
 import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.Utils;
 import com.aorise.utils.define.ConstDefine;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -56,6 +62,10 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
     ScenicService scenicService;
     @Autowired
     MemberService memberService;
+    @Autowired
+    RouteMapper routeMapper;
+    @Autowired
+    RouteCheckPointMapper routeCheckPointMapper;
 
     /**
      * 根据条件分页查询打卡记录
@@ -81,7 +91,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
         }
 
         queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-        queryWrapper.orderByDesc("create_date");
+        queryWrapper.orderByDesc("check_time");
         page = this.page(page, queryWrapper);
 
         List<CheckPointRecordEntity> entities = page.getRecords();
@@ -91,12 +101,12 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 if (checkPointEntity != null) {
                     checkPointRecordEntity.setCheckPointName(checkPointEntity.getName());
-                    checkPointRecordEntity.setIsDestination(checkPointEntity.getIsDestination());
-                }
-                //查询景点名称
-                ScenicEntity scenicEntity = scenicService.getById(checkPointRecordEntity.getScenicId());
-                if (scenicEntity != null) {
-                    checkPointRecordEntity.setScenicName(scenicEntity.getName());
+
+                    //查询景点名称
+                    ScenicEntity scenicEntity = scenicService.getById(checkPointEntity.getScenicId());
+                    if (scenicEntity != null) {
+                        checkPointRecordEntity.setScenicName(scenicEntity.getName());
+                    }
                 }
                 //查询会员昵称
                 MemberEntity memberEntity = memberService.getById(checkPointRecordEntity.getMemberId());
@@ -119,26 +129,70 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
      */
     @Override
     public int addCheckPointRecord(CheckPointRecordEntity checkPointRecordEntity) {
-        boolean bool;
-        //查询该打卡点当天是否有记录
+        //查询该打卡点当天是否有打卡记录
         QueryWrapper<CheckPointRecordEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("scenic_id", checkPointRecordEntity.getScenicId());
         queryWrapper.eq("check_point_id", checkPointRecordEntity.getCheckPointId());
         queryWrapper.eq("member_id", checkPointRecordEntity.getMemberId());
         queryWrapper.eq("date_format(check_time,'%Y-%m-%d')", Utils.dateToStr(new Date(), "yyyy-MM-dd"));
+        queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
         CheckPointRecordEntity checkPointRecord = this.getOne(queryWrapper);
         if (checkPointRecord == null) {
             //不存在，新增打卡记录
             checkPointRecordEntity.setCheckTime(Utils.dateToStr(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            bool = this.save(checkPointRecordEntity);
-            if (bool) {
-                //判断是否要新增景点成就表数据
+            boolean bool = this.save(checkPointRecordEntity);
+            if (!bool) {
+                throw new ServiceException("打卡失败，请重试");
+            }
+            //判断是否要新增景点成就表数据
+            QueryWrapper<RouteCheckPointEntity> routeCheckPointEntityQueryWrapper = new QueryWrapper<>();
+            routeCheckPointEntityQueryWrapper.eq("check_point_id", checkPointRecordEntity.getCheckPointId());
+            routeCheckPointEntityQueryWrapper.eq("is_destination", ConstDefine.IS_YES);
+            List<RouteCheckPointEntity> routeCheckPointEntities = routeCheckPointMapper.selectList(routeCheckPointEntityQueryWrapper);
+
+            //该打卡点是否是某条路线的终点
+            if (routeCheckPointEntities.size() > 0) {
+                //查询该会员当天打卡记录
+                QueryWrapper<CheckPointRecordEntity> checkPointRecordEntityQueryWrapper = new QueryWrapper<>();
+                checkPointRecordEntityQueryWrapper.eq("member_id", checkPointRecordEntity.getMemberId());
+                checkPointRecordEntityQueryWrapper.eq("date_format(check_time,'%Y-%m-%d')", Utils.dateToStr(new Date(), "yyyy-MM-dd"));
+                checkPointRecordEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+                checkPointRecordEntityQueryWrapper.orderByAsc("check_time");
+                List<CheckPointRecordEntity> checkPointRecordEntities = this.list(checkPointRecordEntityQueryWrapper);
+                //打卡集合转换成字符串
+                String checkPointRecords = checkPointRecordEntities.stream().map(r -> r.getCheckPointId().toString()).collect(Collectors.joining(","));
+
+                //是否完成某条路线的打卡
+                boolean bol = false;
+
+                //查询该打卡点信息
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
-                //打卡点是终点，则新增景点成就
-                if (checkPointEntity.getIsDestination().equals(ConstDefine.IS_YES)) {
+                //查询该景点所有路线
+                QueryWrapper<RouteEntity> routeEntityQueryWrapper = new QueryWrapper<>();
+                routeEntityQueryWrapper.eq("scenic_id", checkPointEntity.getScenicId());
+                routeEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+                List<RouteEntity> routeEntities = routeMapper.selectList(routeEntityQueryWrapper);
+                if (routeEntities.size() > 0) {
+                    for (RouteEntity routeEntity : routeEntities) {
+                        //查询该路线需打卡的打卡点集合
+                        QueryWrapper<RouteCheckPointEntity> routeCheckPointEntityQuery = new QueryWrapper<>();
+                        routeCheckPointEntityQuery.eq("route_id", routeEntity.getId());
+                        routeCheckPointEntityQuery.orderByAsc("no");
+                        List<RouteCheckPointEntity> routeCheckPointLists = routeCheckPointMapper.selectList(routeCheckPointEntityQuery);
+                        //需打卡的打卡点集合转换成字符串
+                        String routeCheckPoints = routeCheckPointLists.stream().map(r -> r.getCheckPointId().toString()).collect(Collectors.joining(","));
+                        //判断用户已打卡的路线是否包含需要打卡的路线
+                        if (checkPointRecords.contains(routeCheckPoints)) {
+                            bol = true;
+                            break;
+                        }
+                    }
+                }
+
+                //已完成某条路线的打卡，则新增景点成就
+                if (bol) {
                     ScenicAchievementEntity scenicAchievementEntity = new ScenicAchievementEntity();
                     scenicAchievementEntity.setMemberId(checkPointRecordEntity.getMemberId());
-                    scenicAchievementEntity.setScenicId(checkPointRecordEntity.getScenicId());
+                    scenicAchievementEntity.setScenicId(checkPointEntity.getScenicId());
                     int iRet = scenicAchievementMapper.insert(scenicAchievementEntity);
                     if (iRet <= 0) {
                         throw new ServiceException("新增景点成就失败");
@@ -146,7 +200,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                     //判断是否要新增活动成就表数据
                     //查询包含这个景点的所有活动
                     QueryWrapper<ActivityScenicEntity> activityScenicEntityQueryWrapper = new QueryWrapper<>();
-                    activityScenicEntityQueryWrapper.eq("scenic_id", checkPointRecordEntity.getScenicId());
+                    activityScenicEntityQueryWrapper.eq("scenic_id", checkPointEntity.getScenicId());
                     List<ActivityScenicEntity> activityScenicEntitys = activityScenicMapper.selectList(activityScenicEntityQueryWrapper);
                     for (ActivityScenicEntity activityScenicEntity : activityScenicEntitys) {
                         //查询每个活动包括的景点
@@ -164,6 +218,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                             scenicAchievementEntityQueryWrapper.eq("member_id", checkPointRecordEntity.getMemberId());
                             scenicAchievementEntityQueryWrapper.ge("date_format(create_date,'%Y-%m-%d')", activity.getBeginDate());
                             scenicAchievementEntityQueryWrapper.le("date_format(create_date,'%Y-%m-%d')", activity.getExpirationDate());
+                            scenicAchievementEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
                             List<ScenicAchievementEntity> scenicAchievementEntities = scenicAchievementMapper.selectList(scenicAchievementEntityQueryWrapper);
                             if (scenicAchievementEntities.size() > 0) {
                                 sumScenic++;
@@ -181,19 +236,14 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                             }
                         }
                     }
-
                 }
             }
         } else {
             //存在，不能重复打卡
-            throw new ServiceException("该打卡点今天已有打卡记录");
+            throw new ServiceException("该打卡点今天已有打卡记录。如需打卡请在【我的足迹】中删除原打卡记录");
         }
 
-        if (bool) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return 1;
     }
 
 }

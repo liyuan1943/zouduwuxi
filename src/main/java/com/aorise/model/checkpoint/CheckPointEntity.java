@@ -37,13 +37,6 @@ public class CheckPointEntity {
     private String name;
 
     /**
-     * 图片
-     */
-    @ApiModelProperty(value = "图片")
-    @TableField("pic")
-    private String pic;
-
-    /**
      * 经度
      */
     @ApiModelProperty(value = "经度")
@@ -63,13 +56,6 @@ public class CheckPointEntity {
     @ApiModelProperty(value = "打卡范围半径")
     @TableField("radius")
     private Integer radius;
-
-    /**
-     * 是否终点：1是，2否
-     */
-    @ApiModelProperty(value = "是否终点：1是，2否")
-    @TableField("is_destination")
-    private Integer isDestination;
 
     /**
      * 是否删除：-1删除，1正常

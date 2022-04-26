@@ -125,16 +125,9 @@ public class BannerController {
         logger.debug("Request RESTful API:updateBanner");
         logger.debug("banner：" + bannerEntity);
 
-
-            BannerEntity b =bannerService.getById(bannerEntity.getId());
-
             bannerEntity.setIsDelete(ConstDefine.IS_NOT_DELETE);
             boolean bol = bannerService.updateById(bannerEntity);
             if (bol) {
-                if(!b.getPic().equals(bannerEntity.getPic())) {
-                    //删除图片文件
-                    uploadService.deletefile(b.getPic(),request);
-                }
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "","").toString();
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();

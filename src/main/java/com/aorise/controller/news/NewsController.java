@@ -130,13 +130,8 @@ public class NewsController {
         logger.debug("Request RESTful API:updateNews");
         logger.debug("news：" + newsEntity);
 
-            NewsEntity n = newsService.getById(newsEntity.getId());
             boolean bol = newsService.updateById(newsEntity);
             if (bol) {
-                //删除图片文件
-                if(!n.getPic().equals(newsEntity.getPic())) {
-                    uploadService.deletefile(n.getPic(),request);
-                }
                 return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "","").toString();
             }else {
                 return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "","").toString();

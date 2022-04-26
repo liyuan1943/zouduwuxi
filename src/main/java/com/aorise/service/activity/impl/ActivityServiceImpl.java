@@ -188,11 +188,6 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
         ActivityEntity oldActivity = this.getById(activityEntity.getId());
         boolean bol = this.updateById(activityEntity);
         if (bol) {
-            //删除图片文件
-            if (!oldActivity.getBgi().equals(activityEntity.getBgi())) {
-                uploadService.deletefile(oldActivity.getBgi(), request);
-            }
-
             //查询旧关联景点
             QueryWrapper<ActivityScenicEntity> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("activity_id", activityEntity.getId());

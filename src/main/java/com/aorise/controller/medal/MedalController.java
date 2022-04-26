@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,9 @@ public class MedalController {
         List<MedalEntity> medalEntities;
             //装载查询条件
             QueryWrapper<MedalEntity> entity = new QueryWrapper<>();
-            entity.eq("year", year);
+            if(StringUtils.isNotBlank(year)) {
+                entity.eq("year", year);
+            }
             entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
             entity.orderByDesc("year");
             entity.orderByAsc("scenic_id");

@@ -95,7 +95,7 @@ public class ScenicController {
         logger.debug("id：" + id);
         ScenicEntity scenicEntity = null;
 
-            scenicEntity = scenicService.getScenicById(id);
+        scenicEntity = scenicService.getScenicById(id);
 
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", scenicEntity).toString();
     }
@@ -134,12 +134,12 @@ public class ScenicController {
         logger.debug("Request RESTful API:updateScenic");
         logger.debug("scenic：" + scenicEntity);
 
-            int iRet = scenicService.updateScenic(scenicEntity, request);
-            if (iRet > 0) {
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
-            } else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
+        int iRet = scenicService.updateScenic(scenicEntity, request);
+        if (iRet > 0) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
 
     }
 
@@ -157,12 +157,12 @@ public class ScenicController {
         logger.debug("Request RESTful API:deleteScenic");
         logger.debug("id：" + id);
 
-            int iRet = scenicService.deleteScenic(id, request);
-            if (iRet > 0) {
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
-            } else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
+        int iRet = scenicService.deleteScenic(id, request);
+        if (iRet > 0) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
 
     }
 
