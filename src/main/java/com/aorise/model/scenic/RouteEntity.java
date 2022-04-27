@@ -47,6 +47,13 @@ public class RouteEntity {
     private String pic;
 
     /**
+     * 线路地址
+     */
+    @ApiModelProperty(value = "线路地址")
+    @TableField("location")
+    private String location;
+
+    /**
      * 是否删除：-1删除，1正常
      */
     @TableField("is_delete")

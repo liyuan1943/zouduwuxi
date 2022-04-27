@@ -101,12 +101,11 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 if (checkPointEntity != null) {
                     checkPointRecordEntity.setCheckPointName(checkPointEntity.getName());
-
-                    //查询景点名称
-                    ScenicEntity scenicEntity = scenicService.getById(checkPointEntity.getScenicId());
-                    if (scenicEntity != null) {
-                        checkPointRecordEntity.setScenicName(scenicEntity.getName());
-                    }
+                }
+                //查询景点名称
+                ScenicEntity scenicEntity = scenicService.getById(checkPointRecordEntity.getScenicId());
+                if (scenicEntity != null) {
+                    checkPointRecordEntity.setScenicName(scenicEntity.getName());
                 }
                 //查询会员昵称
                 MemberEntity memberEntity = memberService.getById(checkPointRecordEntity.getMemberId());
@@ -164,11 +163,9 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 //是否完成某条路线的打卡
                 boolean bol = false;
 
-                //查询该打卡点信息
-                CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 //查询该景点所有路线
                 QueryWrapper<RouteEntity> routeEntityQueryWrapper = new QueryWrapper<>();
-                routeEntityQueryWrapper.eq("scenic_id", checkPointEntity.getScenicId());
+                routeEntityQueryWrapper.eq("scenic_id", checkPointRecordEntity.getScenicId());
                 routeEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
                 List<RouteEntity> routeEntities = routeMapper.selectList(routeEntityQueryWrapper);
                 if (routeEntities.size() > 0) {
@@ -192,7 +189,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                 if (bol) {
                     ScenicAchievementEntity scenicAchievementEntity = new ScenicAchievementEntity();
                     scenicAchievementEntity.setMemberId(checkPointRecordEntity.getMemberId());
-                    scenicAchievementEntity.setScenicId(checkPointEntity.getScenicId());
+                    scenicAchievementEntity.setScenicId(checkPointRecordEntity.getScenicId());
                     int iRet = scenicAchievementMapper.insert(scenicAchievementEntity);
                     if (iRet <= 0) {
                         throw new ServiceException("新增景点成就失败");
@@ -200,7 +197,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                     //判断是否要新增活动成就表数据
                     //查询包含这个景点的所有活动
                     QueryWrapper<ActivityScenicEntity> activityScenicEntityQueryWrapper = new QueryWrapper<>();
-                    activityScenicEntityQueryWrapper.eq("scenic_id", checkPointEntity.getScenicId());
+                    activityScenicEntityQueryWrapper.eq("scenic_id", checkPointRecordEntity.getScenicId());
                     List<ActivityScenicEntity> activityScenicEntitys = activityScenicMapper.selectList(activityScenicEntityQueryWrapper);
                     for (ActivityScenicEntity activityScenicEntity : activityScenicEntitys) {
                         //查询每个活动包括的景点

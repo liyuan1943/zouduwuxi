@@ -30,6 +30,13 @@ public class CheckPointRecordEntity {
     private Integer checkPointId;
 
     /**
+     * 景点ID
+     */
+    @ApiModelProperty(value = "景点ID")
+    @TableField("scenic_id")
+    private Integer scenicId;
+
+    /**
      * 会员ID
      */
     @ApiModelProperty(value = "会员ID")

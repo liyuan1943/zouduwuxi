@@ -109,7 +109,13 @@ public class RouteServiceImpl extends ServiceImpl<RouteMapper, RouteEntity> impl
                 //新的打卡点，增加打卡点信息表数据
                 int iRete = checkPointMapper.insert(checkPointEntity);
                 if (iRete <= 0) {
-                    throw new ServiceException("新增打卡点失败。");
+                    throw new ServiceException("新增新的打卡点失败。");
+                }
+            } else {
+                //已存在的打卡点，修改打卡点信息表数据
+                int iRete = checkPointMapper.updateById(checkPointEntity);
+                if (iRete <= 0) {
+                    throw new ServiceException("修改已存在的打卡点失败。");
                 }
             }
             //新增路线打卡点关系
@@ -130,7 +136,6 @@ public class RouteServiceImpl extends ServiceImpl<RouteMapper, RouteEntity> impl
             }
             i++;
         }
-
         return 1;
     }
 
@@ -167,7 +172,13 @@ public class RouteServiceImpl extends ServiceImpl<RouteMapper, RouteEntity> impl
                     //新的打卡点，增加打卡点信息表数据
                     int iRete = checkPointMapper.insert(checkPointEntity);
                     if (iRete <= 0) {
-                        throw new ServiceException("新增打卡点失败。");
+                        throw new ServiceException("新增新的打卡点失败。");
+                    }
+                } else {
+                    //已存在的打卡点，修改打卡点信息表数据
+                    int iRete = checkPointMapper.updateById(checkPointEntity);
+                    if (iRete <= 0) {
+                        throw new ServiceException("修改已存在的打卡点失败。");
                     }
                 }
                 //新增路线打卡点关系
