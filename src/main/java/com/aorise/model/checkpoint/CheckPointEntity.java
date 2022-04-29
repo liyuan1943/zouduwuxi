@@ -81,4 +81,18 @@ public class CheckPointEntity {
     @ApiModelProperty(value = "线路")
     @TableField(exist = false)
     private String route;
+
+    /**
+     * 打卡点序号
+     */
+    @ApiModelProperty(value = "打卡点序号")
+    @TableField(exist = false)
+    private Integer no;
+
+    /**
+     * 是否终点：1是，2否
+     */
+    @ApiModelProperty(value = "是否终点：1是，2否")
+    @TableField(exist = false)
+    private Integer isDestination;
 }

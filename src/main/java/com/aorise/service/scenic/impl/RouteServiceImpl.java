@@ -5,19 +5,13 @@ import com.aorise.mapper.checkpoint.CheckPointMapper;
 import com.aorise.mapper.scenic.RouteCheckPointMapper;
 import com.aorise.mapper.scenic.RouteMapper;
 import com.aorise.mapper.scenic.ScenicAchievementMapper;
-import com.aorise.mapper.scenic.ScenicMapper;
 import com.aorise.model.checkpoint.CheckPointEntity;
 import com.aorise.model.scenic.RouteCheckPointEntity;
 import com.aorise.model.scenic.RouteEntity;
-import com.aorise.model.scenic.ScenicAchievementEntity;
-import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.common.UploadService;
 import com.aorise.service.scenic.RouteService;
-import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,6 +70,8 @@ public class RouteServiceImpl extends ServiceImpl<RouteMapper, RouteEntity> impl
                 List<RouteCheckPointEntity> routeCheckPointEntities = routeCheckPointMapper.selectList(routeCheckPointEntityQueryWrapper);
                 for (RouteCheckPointEntity routeCheckPointEntity : routeCheckPointEntities) {
                     CheckPointEntity checkPointEntity = checkPointMapper.selectById(routeCheckPointEntity.getCheckPointId());
+                    checkPointEntity.setNo(routeCheckPointEntity.getNo());
+                    checkPointEntity.setIsDestination(routeCheckPointEntity.getIsDestination());
                     checkPointEntities.add(checkPointEntity);
                 }
                 routeEntity.setCheckPointEntities(checkPointEntities);
