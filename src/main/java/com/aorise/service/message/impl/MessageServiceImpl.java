@@ -12,6 +12,7 @@ import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +40,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
     /**
      * 分页查询留言信息
+     *
+     * @return Page<Message>
      * @params: page
      * @params: entity
-     * @return Page<Message>
      * @author cat
      * @date 2019-07-10
      * @modified By:
@@ -49,24 +51,24 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
     @Override
     public Page<MessageEntity> getMessageByPage(Page<MessageEntity> page, QueryWrapper<MessageEntity> entity) {
         page = this.page(page, entity);
-        List<MessageEntity> messageEntities =page.getRecords();
-        if(messageEntities.size()>0){
-            for(MessageEntity messageEntity : messageEntities) {
+        List<MessageEntity> messageEntities = page.getRecords();
+        if (messageEntities.size() > 0) {
+            for (MessageEntity messageEntity : messageEntities) {
                 //查询会员信息
                 MemberEntity memberEntity = memberService.getById(messageEntity.getMemberId());
-                if(memberEntity != null){
+                if (memberEntity != null) {
                     messageEntity.setNickname(memberEntity.getNickname());
                     messageEntity.setHeadPic(memberEntity.getHeadPic());
                 }
                 //查询留言图片
-                QueryWrapper<MessagePicEntity> queryWrapper =new QueryWrapper<>();
-                queryWrapper.eq("message_id",messageEntity.getId());
+                QueryWrapper<MessagePicEntity> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("message_id", messageEntity.getId());
                 queryWrapper.orderByAsc("sort");
                 List<MessagePicEntity> messagePicEntities = messagePicMapper.selectList(queryWrapper);
-                if(messagePicEntities.size()>0){
-                    String pics ="";
-                    for(MessagePicEntity messagePicEntity:messagePicEntities){
-                        pics+=messagePicEntity.getPic()+",";
+                if (messagePicEntities.size() > 0) {
+                    String pics = "";
+                    for (MessagePicEntity messagePicEntity : messagePicEntities) {
+                        pics += messagePicEntity.getPic() + ",";
                     }
                     messageEntity.setMessagePics(pics.substring(0, pics.length() - 1));
                 }
@@ -78,39 +80,43 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
 
     /**
      * 新增留言
+     *
      * @param messageEntity 留言
      * @return int 影响行数
      * @author cat
-     * @date  Created in 2018/9/20 9:27
+     * @date Created in 2018/9/20 9:27
      * @modified By:
      */
     @Override
     public int addMessage(MessageEntity messageEntity) {
         boolean bol = this.save(messageEntity);
-        if (bol){
+        if (bol) {
             //新增留言图片
-            String [] pics =messageEntity.getMessagePics().split(",");
-            int i=1;
-            for(String messagePic : pics){
-                MessagePicEntity messagePicEntity = new MessagePicEntity();
-                messagePicEntity.setMessageId(messageEntity.getId());
-                messagePicEntity.setPic(messagePic);
-                messagePicEntity.setSort(i);
-                messagePicMapper.insert(messagePicEntity);
-                i++;
+            if (StringUtils.isNotBlank(messageEntity.getMessagePics())) {
+                String[] pics = messageEntity.getMessagePics().split(",");
+                int i = 1;
+                for (String messagePic : pics) {
+                    MessagePicEntity messagePicEntity = new MessagePicEntity();
+                    messagePicEntity.setMessageId(messageEntity.getId());
+                    messagePicEntity.setPic(messagePic);
+                    messagePicEntity.setSort(i);
+                    messagePicMapper.insert(messagePicEntity);
+                    i++;
+                }
             }
             return 1;
-        }else {
+        } else {
             return -1;
         }
     }
 
     /**
      * 删除留言
+     *
      * @param id 留言ID
      * @return int 影响行数
      * @author cat
-     * @date  Created in 2018/9/20 9:27
+     * @date Created in 2018/9/20 9:27
      * @modified By:
      */
     @Override
@@ -118,20 +124,20 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, MessageEntity
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setId(id);
         messageEntity.setIsDelete(ConstDefine.IS_DELETE);
-        boolean bol =this.updateById(messageEntity);
-        if (bol){
+        boolean bol = this.updateById(messageEntity);
+        if (bol) {
             //查询图片文件
-            QueryWrapper<MessagePicEntity> queryWrapper =new QueryWrapper<>();
-            queryWrapper.eq("message_id",id);
+            QueryWrapper<MessagePicEntity> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("message_id", id);
             List<MessagePicEntity> messagePicEntities = messagePicMapper.selectList(queryWrapper);
-            if(messagePicEntities.size()>0) {
-                for (MessagePicEntity messagePicEntity :messagePicEntities) {
+            if (messagePicEntities.size() > 0) {
+                for (MessagePicEntity messagePicEntity : messagePicEntities) {
                     //删除图片文件
                     uploadService.deletefile(messagePicEntity.getPic(), request);
                 }
             }
             return 1;
-        }else {
+        } else {
             return -1;
         }
     }

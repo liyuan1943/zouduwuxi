@@ -83,6 +83,13 @@ public class CheckPointRecordEntity {
     private String editDate;
 
     /**
+     * 线路
+     */
+    @ApiModelProperty(value = "线路")
+    @TableField(exist = false)
+    private String route;
+
+    /**
      * 打卡点名称
      */
     @ApiModelProperty(value = "打卡点名称")

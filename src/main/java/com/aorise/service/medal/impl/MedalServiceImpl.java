@@ -1,6 +1,5 @@
 package com.aorise.service.medal.impl;
 
-import com.aorise.exceptions.ServiceException;
 import com.aorise.mapper.medal.MedalMapper;
 import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.model.medal.MedalEntity;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -88,27 +88,42 @@ public class MedalServiceImpl extends ServiceImpl<MedalMapper, MedalEntity> impl
      */
     @Override
     public List<MedalEntity> getMedalByMemberId(String memberId) {
-        //查询所有勋章
-        QueryWrapper<MedalEntity> medalEntityQueryWrapper = new QueryWrapper<>();
-        medalEntityQueryWrapper.orderByAsc("sort");
-        List<MedalEntity> medalEntities = this.list(medalEntityQueryWrapper);
-
         //查询该会员景点成就
         QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("member_id", memberId);
         List<ScenicAchievementEntity> scenicAchievementEntities = scenicAchievementMapper.selectList(queryWrapper);
+        //按年份获取会员完成成就的景点集合
+        Map<String, List<ScenicAchievementEntity>> finishScenicIdMap = scenicAchievementEntities.stream()
+                .collect(Collectors.groupingBy(ScenicAchievementEntity::getYear, Collectors.toList()));
+
+        //查询所有勋章
+        QueryWrapper<MedalEntity> medalEntityQueryWrapper = new QueryWrapper<>();
+        medalEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+        medalEntityQueryWrapper.orderByDesc("year");
+        medalEntityQueryWrapper.orderByAsc("sort");
+        medalEntityQueryWrapper.orderByAsc("scenic_id");
+        medalEntityQueryWrapper.orderByAsc("id");
+        List<MedalEntity> medalEntities = this.list(medalEntityQueryWrapper);
+
         for (MedalEntity medalEntity : medalEntities) {
             //获取勋章关联景点集合
             String[] scenicIdArr = medalEntity.getScenicId().split(",");
             List<String> scenicIdList = Arrays.asList(scenicIdArr);
-            //获取会员完成成就的景点集合
-            List<String> finishScenicIdList = scenicAchievementEntities.stream().map(e -> e.getScenicId().toString()).collect(Collectors.toList());
-            boolean isHave = finishScenicIdList.containsAll(scenicIdList);
-            if (isHave) {
-                medalEntity.setIsGet(ConstDefine.IS_YES);
-            } else {
-                medalEntity.setIsGet(ConstDefine.IS_NO);
+
+            //取出符合该勋章年份并已完成的景点成就集合
+            List<ScenicAchievementEntity> scenicAchievements = finishScenicIdMap.get(medalEntity.getYear());
+            if (scenicAchievements != null) {
+                if (scenicAchievements.size() > 0) {
+                    List<String> finishScenicIdList = scenicAchievements.stream().map(e -> e.getScenicId().toString()).collect(Collectors.toList());
+                    //完成景点ID集合包含勋章所需的景点ID，则获得该勋章
+                    boolean isHave = finishScenicIdList.containsAll(scenicIdList);
+                    if (isHave) {
+                        medalEntity.setIsGet(ConstDefine.IS_YES);
+                        continue;
+                    }
+                }
             }
+            medalEntity.setIsGet(ConstDefine.IS_NO);
         }
         return medalEntities;
     }

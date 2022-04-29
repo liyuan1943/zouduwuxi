@@ -1,6 +1,5 @@
 package com.aorise.service.activity.impl;
 
-import com.aorise.config.Config;
 import com.aorise.mapper.activity.ActivityMapper;
 import com.aorise.mapper.activity.ActivityScenicMapper;
 import com.aorise.model.activity.ActivityEntity;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,8 +75,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
             queryWrapper.lt("expiration_date",newDay);
         }
         queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-        queryWrapper.orderByDesc("begin_date");
         queryWrapper.orderByDesc("expiration_date");
+        queryWrapper.orderByDesc("begin_date");
         page = this.page(page, queryWrapper);
 
         //查询活动是否开放

@@ -74,4 +74,11 @@ public class CheckPointEntity {
      */
     @TableField("edit_date")
     private String editDate;
+
+    /**
+     * 线路
+     */
+    @ApiModelProperty(value = "线路")
+    @TableField(exist = false)
+    private String route;
 }

@@ -42,7 +42,11 @@ public class ScenicAchievementEntity {
     @TableField("create_date")
     private String createDate;
 
-
+    /**
+     * 年份
+     */
+    @TableField("year")
+    private String year;
 
 
 }

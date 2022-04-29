@@ -7,23 +7,16 @@ import com.aorise.mapper.activity.ActivityScenicMapper;
 import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.model.activity.ActivityAchievementEntity;
 import com.aorise.model.activity.ActivityScenicEntity;
-import com.aorise.model.checkpoint.CheckPointEntity;
-import com.aorise.model.checkpoint.CheckPointRecordEntity;
 import com.aorise.model.member.MemberEntity;
 import com.aorise.model.scenic.ScenicAchievementEntity;
 import com.aorise.service.member.MemberService;
 import com.aorise.service.statistic.StatisticService;
-import com.aorise.utils.PageListUtils;
-import com.aorise.utils.define.ConstDefine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import net.sf.jsqlparser.statement.create.table.Index;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -79,7 +72,7 @@ public class StatisticServiceImpl implements StatisticService {
         } else if (timeType == 3) {
             //月榜
             queryWrapper.eq("YEAR(create_date)", cal.get(Calendar.YEAR));
-            queryWrapper.eq("month(create_date)", cal.get(Calendar.MONTH));
+            queryWrapper.eq("month(create_date)", cal.get(Calendar.MONTH) + 1);
         }
         queryWrapper.orderByAsc("create_date");
 
@@ -161,7 +154,7 @@ public class StatisticServiceImpl implements StatisticService {
         Integer memberId = map.get("memberId") == null ? null : Integer.parseInt(map.get("memberId").toString());
         Integer activityId = map.get("activityId") == null ? null : Integer.parseInt(map.get("activityId").toString());
 
-        MemberEntity member= memberService.getById(memberId);
+        MemberEntity member = memberService.getById(memberId);
         if (member == null) {
             throw new ServiceException("我的会员信息不存在");
         }

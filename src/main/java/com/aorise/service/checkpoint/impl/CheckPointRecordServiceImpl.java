@@ -24,10 +24,10 @@ import com.aorise.service.member.MemberService;
 import com.aorise.service.scenic.ScenicService;
 import com.aorise.utils.Utils;
 import com.aorise.utils.define.ConstDefine;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,6 +97,30 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
         List<CheckPointRecordEntity> entities = page.getRecords();
         if (entities != null) {
             for (CheckPointRecordEntity checkPointRecordEntity : entities) {
+                //查询线路
+                QueryWrapper<RouteCheckPointEntity> checkPointRecordEntityQueryWrapper = new QueryWrapper<>();
+                checkPointRecordEntityQueryWrapper.eq("scenic_id",checkPointRecordEntity.getScenicId());
+                checkPointRecordEntityQueryWrapper.eq("check_point_id",checkPointRecordEntity.getCheckPointId());
+                checkPointRecordEntityQueryWrapper.orderByAsc("no");
+                List<RouteCheckPointEntity> routeCheckPointEntities =routeCheckPointMapper.selectList(checkPointRecordEntityQueryWrapper);
+                if(routeCheckPointEntities.size()>0){
+                    StringBuilder route= new StringBuilder();
+                    for(RouteCheckPointEntity routeCheckPointEntity :routeCheckPointEntities){
+                        RouteEntity routeEntity = routeMapper.selectById(routeCheckPointEntity.getRouteId());
+                        if(routeEntity!=null) {
+                            if (routeCheckPointEntity.getIsDestination().equals(ConstDefine.IS_YES)) {
+                                route.append(",").append(routeEntity.getName()).append("(终点)");
+                            }else {
+                                route.append(",").append(routeEntity.getName()).append("(打卡点").append(routeCheckPointEntity.getNo()).append(")");
+                            }
+                        }
+                    }
+                    if(StringUtils.isNotBlank(route.toString())){
+                        route = new StringBuilder(route.substring(1));
+                        checkPointRecordEntity.setRoute(route.toString());
+                    }
+                }
+
                 //查询打卡点名称
                 CheckPointEntity checkPointEntity = checkPointService.getById(checkPointRecordEntity.getCheckPointId());
                 if (checkPointEntity != null) {
@@ -190,6 +214,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                     ScenicAchievementEntity scenicAchievementEntity = new ScenicAchievementEntity();
                     scenicAchievementEntity.setMemberId(checkPointRecordEntity.getMemberId());
                     scenicAchievementEntity.setScenicId(checkPointRecordEntity.getScenicId());
+                    scenicAchievementEntity.setYear(checkPointRecordEntity.getCheckTime().substring(0,4));
                     int iRet = scenicAchievementMapper.insert(scenicAchievementEntity);
                     if (iRet <= 0) {
                         throw new ServiceException("新增景点成就失败");
@@ -215,7 +240,6 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                             scenicAchievementEntityQueryWrapper.eq("member_id", checkPointRecordEntity.getMemberId());
                             scenicAchievementEntityQueryWrapper.ge("date_format(create_date,'%Y-%m-%d')", activity.getBeginDate());
                             scenicAchievementEntityQueryWrapper.le("date_format(create_date,'%Y-%m-%d')", activity.getExpirationDate());
-                            scenicAchievementEntityQueryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
                             List<ScenicAchievementEntity> scenicAchievementEntities = scenicAchievementMapper.selectList(scenicAchievementEntityQueryWrapper);
                             if (scenicAchievementEntities.size() > 0) {
                                 sumScenic++;

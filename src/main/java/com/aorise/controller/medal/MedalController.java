@@ -57,16 +57,18 @@ public class MedalController {
         logger.debug("year：" + year);
 
         List<MedalEntity> medalEntities;
-            //装载查询条件
-            QueryWrapper<MedalEntity> entity = new QueryWrapper<>();
-            if(StringUtils.isNotBlank(year)) {
-                entity.eq("year", year);
-            }
-            entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            entity.orderByDesc("year");
-            entity.orderByAsc("scenic_id");
-            medalEntities = medalService.list(entity);
-            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntities).toString();
+        //装载查询条件
+        QueryWrapper<MedalEntity> entity = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(year)) {
+            entity.eq("year", year);
+        }
+        entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+        entity.orderByDesc("year");
+        entity.orderByAsc("sort");
+        entity.orderByAsc("scenic_id");
+        entity.orderByAsc("id");
+        medalEntities = medalService.list(entity);
+        return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntities).toString();
     }
 
     /**
@@ -83,10 +85,10 @@ public class MedalController {
         logger.debug("id：" + id);
         MedalEntity medalEntity = null;
 
-            QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("id", id);
-            queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
-            medalEntity = medalService.getOne(queryWrapper);
+        QueryWrapper<MedalEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id);
+        queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
+        medalEntity = medalService.getOne(queryWrapper);
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntity).toString();
     }
 
@@ -103,12 +105,12 @@ public class MedalController {
         logger.debug("Request RESTful API:addMedal");
         logger.debug("medal：" + medalEntity);
 
-            int iRet = medalService.addMedal(medalEntity);
-            if (iRet > 0) {
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntity.getId()).toString();
-            } else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
+        int iRet = medalService.addMedal(medalEntity);
+        if (iRet > 0) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntity.getId()).toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
     }
 
     /**
@@ -124,12 +126,12 @@ public class MedalController {
         logger.debug("Request RESTful API:updateMedal");
         logger.debug("medal：" + medalEntity);
 
-            int iRet = medalService.updateMedal(medalEntity, request);
-            if (iRet > 0) {
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
-            } else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
+        int iRet = medalService.updateMedal(medalEntity, request);
+        if (iRet > 0) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
     }
 
     /**
@@ -146,20 +148,20 @@ public class MedalController {
         logger.debug("Request RESTful API:deleteMedal");
         logger.debug("id：" + id);
 
-            MedalEntity medalEntity = new MedalEntity();
-            medalEntity.setIsDelete(ConstDefine.IS_DELETE);
-            medalEntity.setId(id);
-            boolean bool = medalService.updateById(medalEntity);
+        MedalEntity medalEntity = new MedalEntity();
+        medalEntity.setIsDelete(ConstDefine.IS_DELETE);
+        medalEntity.setId(id);
+        boolean bool = medalService.updateById(medalEntity);
 
 
-            if (bool) {
-                //删除图片文件
-                MedalEntity b = medalService.getById(id);
-                uploadService.deletefile(b.getPic(), request);
-                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
-            } else {
-                return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
-            }
+        if (bool) {
+            //删除图片文件
+            MedalEntity b = medalService.getById(id);
+            uploadService.deletefile(b.getPic(), request);
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        } else {
+            return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
+        }
     }
 
     /**
@@ -175,8 +177,8 @@ public class MedalController {
         logger.debug("Request RESTful API:getMedalByMemberId");
         logger.debug("memberId：" + memberId);
 
-        List<MedalEntity> medalEntities= medalService.getMedalByMemberId(memberId);
-            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntities).toString();
+        List<MedalEntity> medalEntities = medalService.getMedalByMemberId(memberId);
+        return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", medalEntities).toString();
 
     }
 
