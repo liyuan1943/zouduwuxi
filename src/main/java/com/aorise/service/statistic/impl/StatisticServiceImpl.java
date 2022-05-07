@@ -85,6 +85,9 @@ public class StatisticServiceImpl implements StatisticService {
             //统计打卡景点数
             Map<Integer, Map<String, Long>> scenicSumMap = scenicAchievementEntities.stream()
                     .collect(Collectors.groupingBy(ScenicAchievementEntity::getMemberId, Collectors.groupingBy(o -> o.getMemberId() + "_" + o.getScenicId(), Collectors.counting())));
+            //统计最后打卡时间
+            Map<Integer, Optional<ScenicAchievementEntity>> checkDateMap = scenicAchievementEntities.stream()
+                    .collect(Collectors.groupingBy(ScenicAchievementEntity::getMemberId, Collectors.maxBy(Comparator.comparing(ScenicAchievementEntity::getCreateDate))));
 
             //转换成list，并排序
             scenicRankVos = checkSumMap.keySet().stream().map(key -> {
@@ -93,6 +96,7 @@ public class StatisticServiceImpl implements StatisticService {
                 scenicRankVo.setMemberId(key);
                 scenicRankVo.setCheckSum(checkSumMap.get(key).intValue());
                 scenicRankVo.setScenicSum(scenicSumMap.get(key).size());
+                scenicRankVo.setCheckTime(checkDateMap.get(key).get().getCreateDate());
                 //查询会员信息
                 MemberEntity memberEntity = memberService.getById(key);
                 if (memberEntity != null) {
@@ -100,7 +104,10 @@ public class StatisticServiceImpl implements StatisticService {
                     scenicRankVo.setHeadPic(memberEntity.getHeadPic());
                 }
                 return scenicRankVo;
-            }).sorted(Comparator.comparing(ScenicRankVo::getCheckSum).thenComparing(ScenicRankVo::getScenicSum).reversed()).collect(Collectors.toList());
+            }).sorted(Comparator.comparing(ScenicRankVo::getCheckSum,Comparator.reverseOrder())
+                    .thenComparing(ScenicRankVo::getScenicSum,Comparator.reverseOrder())
+                    .thenComparing(ScenicRankVo::getCheckTime))
+                    .collect(Collectors.toList());
 
             //我的排行榜数据
             ScenicRankVo myScenicRankVo = new ScenicRankVo();

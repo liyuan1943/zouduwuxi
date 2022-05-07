@@ -1,7 +1,6 @@
 package com.aorise.service.wechat;
 
-import com.aorise.model.wechat.UserAccessTokenModel;
-import com.aorise.model.wechat.UserInfoModel;
+import com.aorise.model.member.MemberEntity;
 
 
 /**
@@ -18,6 +17,6 @@ public interface WechatUserService {
      * @param avatarUrl
      * @return 会员ID
      */
-    Integer getWechatProUserInfo(String code, Integer gender, String nickName, String avatarUrl);
+    MemberEntity getWechatProUserInfo(String code, Integer gender, String nickName, String avatarUrl);
 
 }

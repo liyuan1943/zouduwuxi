@@ -2,14 +2,11 @@ package com.aorise.service.wechat.impl;
 
 import com.aorise.exceptions.WechatException;
 import com.aorise.model.member.MemberEntity;
-import com.aorise.model.wechat.TemplateMessageModel;
-import com.aorise.model.wechat.UserAccessTokenModel;
 import com.aorise.model.wechat.UserInfoModel;
 import com.aorise.service.member.MemberService;
-import com.aorise.service.wechat.TemplateService;
 import com.aorise.service.wechat.WechatUserService;
+import com.aorise.utils.TokenUtils;
 import com.aorise.utils.UUIDBits;
-import com.aorise.utils.Utils;
 import com.aorise.utils.define.ConstDefine;
 import com.aorise.utils.wechat.WechatProTokenUtil;
 import com.aorise.utils.wechat.WeixinUtil;
@@ -18,8 +15,6 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 /**
  * Created by cat on 2017-11-09.
@@ -50,8 +45,8 @@ public class WechatUserServiceImpl implements WechatUserService {
      * @return 会员ID
      */
     @Override
-    public Integer getWechatProUserInfo(String code, Integer gender, String nickName, String avatarUrl) {
-        Integer memberId = null;
+    public MemberEntity getWechatProUserInfo(String code, Integer gender, String nickName, String avatarUrl) {
+        MemberEntity memberEntity= null;
         UserInfoModel userInfoModel = null;
         // 拼装换取网页授权的url
         String url = getProUserOpenIdUrl.replace("APPID", WechatProTokenUtil.appIdPro).replace("SECRET", WechatProTokenUtil.appSecretPro).replace("JSCODE", code);
@@ -73,7 +68,7 @@ public class WechatUserServiceImpl implements WechatUserService {
             //查询用户是否存在
             QueryWrapper<MemberEntity> wrapper = new QueryWrapper<>();
             wrapper.eq("openid_pro", userInfoModel.getOpenid());
-            MemberEntity memberEntity = memberService.getOne(wrapper);
+            memberEntity = memberService.getOne(wrapper);
 
             //写入用户信息
             boolean iRet = false;
@@ -96,10 +91,11 @@ public class WechatUserServiceImpl implements WechatUserService {
                 iRet = memberService.updateById(memberEntity);
             }
             if(iRet){
-                memberId = memberEntity.getId();
+                String token= TokenUtils.sign(memberEntity.getId());
+                memberEntity.setToken(token);
             }
         }
-        return memberId;
+        return memberEntity;
     }
 
 }

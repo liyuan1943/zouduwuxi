@@ -1,7 +1,8 @@
 package com.aorise.model.system;
 
-import java.io.Serializable;
-import java.util.List;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 /**
  * @author cat
@@ -9,116 +10,31 @@ import java.util.List;
  * @date  Created in 2018/9/12 10:50
  * @modified By:
  */
-public class SysUserModel implements Serializable{
+@TableName("sys_user")
+@Data
+public class SysUserModel{
 
+    @TableField("id")
     private Integer id;
+    @TableField("user_name")
     private String userName;
+    @TableField("password")
     private String passWord;
+    @TableField("name")
     private String name;
+    @TableField("phone_num")
     private String phoneNum;
+    @TableField("id_number")
     private String idNumber;
+    @TableField("role")
     private Integer role;
+    @TableField("level")
     private Integer level;
-    private Integer isInitialPwd;
 
-    public Integer getIsInitialPwd() {
-        return isInitialPwd;
-    }
 
-    public void setIsInitialPwd(Integer isInitialPwd) {
-        this.isInitialPwd = isInitialPwd;
-    }
-
+    @TableField(exist = false)
     private String token;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassWord() {
-        return passWord;
-    }
-
-    public void setPassWord(String passWord) {
-        this.passWord = passWord;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoneNum() {
-        return phoneNum;
-    }
-
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
-    }
-
-    public String getIdNumber() {
-        return idNumber;
-    }
-
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
-    }
-
-    public Integer getRole() {
-        return role;
-    }
-
-    public void setRole(Integer role) {
-        this.role = role;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-//    private String deptId;
-//    private String fullName;
-//    private String adder;
-//    private String adderName;
-//    private String phone;
-//    private String groups;
-//
-//    private String groupsName;//用户组名称
-//
-//    private Integer state;
-//    private Integer creater;
-//    private String createTime;
-//    private Integer editer;
-//    private String editeTime;
-//
-//    private Integer unreadInform;//通知未读
-//    private Integer isInitialPwd;//是否初始密码
 
 
 }

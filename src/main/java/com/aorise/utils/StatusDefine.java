@@ -36,6 +36,7 @@ public interface StatusDefine {
     //业务逻辑层出错
     int SERVICE_ERROR=5004;
 
+
     //空指针异常
     int NULL_POINTER_ERROR=5006;
 
@@ -47,7 +48,8 @@ public interface StatusDefine {
     int READ_EXCEL_ERROR=7003;
     //文件不存在
     int FILE_NOT_FOUND = 7004;
-
+    //上传文件过大
+    int FILE_SIZE_MAX_ERROR=7005;
 
     //数据合法化验证
     //数据格式不正确

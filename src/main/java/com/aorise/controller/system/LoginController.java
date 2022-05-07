@@ -1,50 +1,51 @@
 package com.aorise.controller.system;
 
+import com.aorise.mapper.system.SysUserMapper;
 import com.aorise.model.system.LoginUserModel;
 import com.aorise.model.system.SysUserModel;
 import com.aorise.utils.StatusDefine;
 import com.aorise.utils.StatusDefineMessage;
+import com.aorise.utils.TokenUtils;
 import com.aorise.utils.Utils;
 import com.aorise.utils.json.JsonResponseData;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.DisabledAccountException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
-import org.springframework.dao.DataAccessException;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @Api(value = "登录登出相关接口", tags = "登录登出相关接口")
 @RestController
 public class LoginController {
 
+    @Autowired
+    SysUserMapper sysUserMapper;
+
     @ApiOperation(value = "用户登录", httpMethod = "POST", response = String.class, notes = "用户登录")
     @RequestMapping(value = "/api/login", method = RequestMethod.POST, produces = "application/json")
     public String login(@RequestBody @Validated LoginUserModel loginUserModel) {
+        if(StringUtils.isNotBlank(loginUserModel.getUsername())  && StringUtils.isNotBlank(loginUserModel.getPassword()) ) {
+            QueryWrapper<SysUserModel> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_name", loginUserModel.getUsername());
+            queryWrapper.eq("password", Utils.getMd5DigestAsHex(loginUserModel.getPassword()));
+            SysUserModel sysUserModel = sysUserMapper.selectOne(queryWrapper);
 
-        Subject currentUser = SecurityUtils.getSubject();//获取当前sbuject
-        UsernamePasswordToken token = new UsernamePasswordToken(loginUserModel.getUsername(), Utils.getMd5DigestAsHex(loginUserModel.getPassword()));
-        token.setRememberMe(true);
-
-            //执行登陆
-            currentUser.login(token);
-            SecurityUtils.getSubject().getSession().setTimeout(1800000);//设置超时时间 单位ms
-            SysUserModel user = (SysUserModel) currentUser.getPrincipal();
-            user.setToken((String) currentUser.getSession().getId());
-            user.setIsInitialPwd(2);//不是初始密码
-            if (user.getUserName().length() > 6 && user.getPassWord()
-                    .equals(Utils.getMd5DigestAsHex(user.getUserName()
-                            .substring(user.getUserName().length() - 6)))) {//判断是否初始密码
-                user.setIsInitialPwd(1);
+            //用户不存在
+            if(sysUserModel == null){
+                return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.U_PWD_FAILED), StatusDefine.U_PWD_FAILED, "", null).toString();
             }
-            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS),
-                    StatusDefine.SUCCESS, "", user).toString();
 
+            String token= TokenUtils.sign(sysUserModel.getId());
+            sysUserModel.setToken(token);
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", sysUserModel).toString();
+        }else {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", null).toString();
+        }
     }
 
     @RequestMapping(value = "/api/403", method = RequestMethod.GET)
@@ -62,10 +63,7 @@ public class LoginController {
     @ApiOperation(value = "用户登出", httpMethod = "GET", response = String.class, notes = "用户登出")
     @RequestMapping(value = "/api/logout", method = RequestMethod.GET)
     public String logOut() {
-        Subject currentUser = SecurityUtils.getSubject();
-        if (currentUser != null) {
-            currentUser.logout();
-        }
+
         return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", null).toString();
     }
 

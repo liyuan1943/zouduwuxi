@@ -41,5 +41,9 @@ public class ScenicRankVo {
      */
     private Integer scenicSum;
 
+    /**
+     * 最后打卡完成时间
+     */
+    private String checkTime;
 
 }

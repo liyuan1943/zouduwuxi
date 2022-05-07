@@ -1,7 +1,6 @@
 package com.aorise.controller.wechat;
 
-import com.aorise.exceptions.ServiceException;
-import com.aorise.exceptions.WechatException;
+import com.aorise.model.member.MemberEntity;
 import com.aorise.service.wechat.WechatUserService;
 import com.aorise.utils.StatusDefine;
 import com.aorise.utils.StatusDefineMessage;
@@ -56,10 +55,10 @@ public class WechatUserController {
         logger.debug("nickName:"+nickName);
         logger.debug("avatarUrl:"+avatarUrl);
 
-            Integer memberId = wechatUserService.getWechatProUserInfo(code,gender,nickName,avatarUrl);
+            MemberEntity memberEntity = wechatUserService.getWechatProUserInfo(code,gender,nickName,avatarUrl);
 
-            logger.debug("memberId:"+memberId);
-            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, null, memberId).toString();
+            logger.debug("memberId:"+memberEntity.getId());
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, null, memberEntity).toString();
 
     }
 

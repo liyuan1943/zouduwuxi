@@ -49,6 +49,8 @@ public class StatusDefineMessage {
                 return "用户已经存在";
             case StatusDefine.SERVICE_ERROR:
                 return "业务逻辑层出错";
+            case StatusDefine.FILE_SIZE_MAX_ERROR:
+                return "上传文件过大";
             case StatusDefine.DATA_FORMAT_ERROR:
                 return "入参数据格式不正确";
             case StatusDefine.PARAM_TYPE_ERROR:

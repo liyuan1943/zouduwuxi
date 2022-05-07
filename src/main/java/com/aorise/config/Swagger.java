@@ -18,9 +18,17 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class Swagger {
 
+    public static boolean swaggerIsEnable;
+
+    @org.springframework.beans.factory.annotation.Value("${swagger.is.enable}")
+    public void setAppIdPro(boolean swaggerIsEnable) {
+        Swagger.swaggerIsEnable = swaggerIsEnable;
+    }
+
     @Bean
     public Docket RecruitApi() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .enable(swaggerIsEnable)
                 .groupName("Recruit")
                 .genericModelSubstitutes(DeferredResult.class)
                 .useDefaultResponseMessages(false)

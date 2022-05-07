@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,84 +47,91 @@ public class ControllerExceptionHandleAdvice {
 
     /**
      * 400 - Bad Request
+     *
      * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误信息
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public String handleMissingServletRequestParameterException(HttpServletRequest request, HttpServletResponse response, MissingServletRequestParameterException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.PARAM_NUL, e.getMessage(), null).toString();
     }
+
     /**
      * 空指针异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param  e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( NullPointerException.class )
+    @ExceptionHandler(NullPointerException.class)
     public String nullPointerExceptionHandler(HttpServletRequest request, HttpServletResponse response, NullPointerException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.NULL_POINTER_ERROR, e.getMessage(), null).toString();
     }
 
     /**
      * IO异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( IOException.class )
+    @ExceptionHandler(IOException.class)
     public String ioExceptionHandler(HttpServletRequest request, HttpServletResponse response, IOException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.NULL_POINTER_ERROR, e.getMessage(), null).toString();
     }
 
     /**
      * 未知方法异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param  e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( NoSuchMethodException.class )
+    @ExceptionHandler(NoSuchMethodException.class)
     public String noSuchMethodExceptionHandler(HttpServletRequest request, HttpServletResponse response, NoSuchMethodException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.NULL_POINTER_ERROR, e.getMessage(), null).toString();
     }
 
     /**
      * 数组溢出
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( IndexOutOfBoundsException.class )
+    @ExceptionHandler(IndexOutOfBoundsException.class)
     public String indexOutOfBoundsExceptionHandler(HttpServletRequest request, HttpServletResponse response, IndexOutOfBoundsException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.NULL_POINTER_ERROR, e.getMessage(), null).toString();
     }
 
     /**
      * 栈溢出
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( {StackOverflowError.class} )
+    @ExceptionHandler({StackOverflowError.class})
     public String requestStackOverflow(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.NULL_POINTER_ERROR, e.getMessage(), null).toString();
     }
@@ -130,14 +139,15 @@ public class ControllerExceptionHandleAdvice {
 
     /**
      * 请求参数类型不匹配
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( {IllegalArgumentException.class, IllegalStateException.class} )
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     public String illegalArgumentExceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.PARAM_TYPE_ERROR, e.getMessage(), null).toString();
     }
@@ -145,35 +155,55 @@ public class ControllerExceptionHandleAdvice {
 
     /**
      * 数据库异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( {DataAccessException.class} )
+    @ExceptionHandler({DataAccessException.class})
     public String badSqlExceptionHandler(HttpServletRequest request, HttpServletResponse response, DataAccessException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, "系统错误，请联系管理员！", StatusDefine.DB_ERROR, e.getMessage(), null).toString();
     }
+
     /**
      * 业务逻辑异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( {ServiceException.class} )
+    @ExceptionHandler({ServiceException.class})
     public String badSqlExceptionHandler(HttpServletRequest request, HttpServletResponse response, RuntimeException e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, e.getMessage(), StatusDefine.SERVICE_ERROR, e.getMessage(), null).toString();
     }
+
+    /**
+     * 上传文件超过大小异常
+     *
+     * @param request  request
+     * @param response response
+     * @param e        e
+     * @return 错误消息
+     */
+    @ExceptionHandler({MaxUploadSizeExceededException.class})
+    public String badSqlExceptionHandler(HttpServletRequest request, HttpServletResponse response, MultipartException e) {
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
+        logger.error("error:" + e.getMessage());
+        return new JsonResponseData(false, "上传文件过大！", StatusDefine.FILE_SIZE_MAX_ERROR, e.getMessage(), null).toString();
+    }
+
     /**
      * 校验异常
-     * @param request     request
-     * @param  response  response
-     * @param e e
+     *
+     * @param request  request
+     * @param response response
+     * @param e        e
      * @return 错误消息
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -185,11 +215,13 @@ public class ControllerExceptionHandleAdvice {
         }
         return new JsonResponseData(false, errorMesssage, StatusDefine.DATA_FORMAT_ERROR, errorMesssage, null).toString();
     }
+
     /**
      * 校验异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
     @ExceptionHandler(value = BindException.class)
@@ -201,11 +233,13 @@ public class ControllerExceptionHandleAdvice {
         }
         return new JsonResponseData(false, errorMesssage, StatusDefine.DATA_FORMAT_ERROR, errorMesssage, null).toString();
     }
+
     /**
      * 校验异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
     @ExceptionHandler(value = ConstraintViolationException.class)
@@ -217,20 +251,21 @@ public class ControllerExceptionHandleAdvice {
             ConstraintViolation<?> cvl = iterator.next();
             msgList.add(cvl.getMessageTemplate());
         }
-        return new JsonResponseData(false, String.join(",",msgList), StatusDefine.DATA_FORMAT_ERROR, String.join(",",msgList), null).toString();
+        return new JsonResponseData(false, String.join(",", msgList), StatusDefine.DATA_FORMAT_ERROR, String.join(",", msgList), null).toString();
     }
     //系统异常
 
     /**
      * 系统异常
-     * @param request request
+     *
+     * @param request  request
      * @param response response
-     * @param e e
+     * @param e        e
      * @return 错误消息
      */
-    @ExceptionHandler( {Exception.class} )
+    @ExceptionHandler({Exception.class})
     public String exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        logger.error("controller:" + getClassName(e,request) + ". function:" + getMethodName(e,request) + "");
+        logger.error("controller:" + getClassName(e, request) + ". function:" + getMethodName(e, request) + "");
         logger.error("error:" + e.getMessage());
         return new JsonResponseData(false, getMessage(StatusDefine.SYS_ERROR), StatusDefine.SYS_ERROR, getMessage(StatusDefine.SYS_ERROR), null).toString();
     }
