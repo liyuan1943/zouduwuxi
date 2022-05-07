@@ -2,8 +2,10 @@ package com.aorise.service.activity.impl;
 
 import com.aorise.mapper.activity.ActivityMapper;
 import com.aorise.mapper.activity.ActivityScenicMapper;
+import com.aorise.mapper.scenic.ScenicAchievementMapper;
 import com.aorise.model.activity.ActivityEntity;
 import com.aorise.model.activity.ActivityScenicEntity;
+import com.aorise.model.scenic.ScenicAchievementEntity;
 import com.aorise.model.scenic.ScenicEntity;
 import com.aorise.service.activity.ActivityService;
 import com.aorise.service.common.UploadService;
@@ -44,6 +46,9 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
     @Autowired
     UploadService uploadService;
 
+    @Autowired
+    ScenicAchievementMapper scenicAchievementMapper;
+
     /**
      * 分页查询活动信息
      *
@@ -64,15 +69,15 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
             queryWrapper.like("name", name);
         }
         String newDay = Utils.dateToStr(new Date(), "yyyy-MM-dd");
-        if(isOpenning.equals(String.valueOf(ConstDefine.ACTIVITY_WAIT))){
-            queryWrapper.gt("begin_date",newDay);
+        if (isOpenning.equals(String.valueOf(ConstDefine.ACTIVITY_WAIT))) {
+            queryWrapper.gt("begin_date", newDay);
         }
-        if(isOpenning.equals(String.valueOf(ConstDefine.ACTIVITY_OPENNING))){
-            queryWrapper.le("begin_date",newDay);
-            queryWrapper.ge("expiration_date",newDay);
+        if (isOpenning.equals(String.valueOf(ConstDefine.ACTIVITY_OPENNING))) {
+            queryWrapper.le("begin_date", newDay);
+            queryWrapper.ge("expiration_date", newDay);
         }
-        if(isOpenning.equals(String.valueOf(ConstDefine.ACTIVITY_END))){
-            queryWrapper.lt("expiration_date",newDay);
+        if (isOpenning.equals(String.valueOf(ConstDefine.ACTIVITY_END))) {
+            queryWrapper.lt("expiration_date", newDay);
         }
         queryWrapper.eq("is_delete", ConstDefine.IS_NOT_DELETE);
         queryWrapper.orderByDesc("expiration_date");
@@ -86,13 +91,13 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
                 Date dateBegin = Utils.strToDate(activityEntity.getBeginDate(), "yyyy-MM-dd");
                 Date dateExpiration = Utils.strToDate(activityEntity.getExpirationDate(), "yyyy-MM-dd");
                 Date dateNow = Utils.strToDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), "yyyy-MM-dd");
-                if (dateBegin.compareTo(dateNow)>0) {
+                if (dateBegin.compareTo(dateNow) > 0) {
                     activityEntity.setIsOpenning(ConstDefine.ACTIVITY_WAIT);
-                }else if (dateBegin.compareTo(dateNow)<=0 && dateExpiration.compareTo(dateNow)>=0){
+                } else if (dateBegin.compareTo(dateNow) <= 0 && dateExpiration.compareTo(dateNow) >= 0) {
                     activityEntity.setIsOpenning(ConstDefine.ACTIVITY_OPENNING);
-                }else if (dateExpiration.compareTo(dateNow)<0){
+                } else if (dateExpiration.compareTo(dateNow) < 0) {
                     activityEntity.setIsOpenning(ConstDefine.ACTIVITY_END);
-                }else {
+                } else {
                     activityEntity.setIsOpenning(0);
                 }
             }
@@ -102,10 +107,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
 
     /**
      * 根据ID查询活动信息
+     *
      * @param id 活动ID
      * @return ActivityEntity
      * @author cat
-     * @date  Created in 2018/9/20 9:27
+     * @date Created in 2018/9/20 9:27
      * @modified By:
      */
     @Override
@@ -114,15 +120,22 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
         entity.eq("id", id);
         entity.eq("is_delete", ConstDefine.IS_NOT_DELETE);
         ActivityEntity activityEntity = this.getOne(entity);
-        if(activityEntity != null){
+        if (activityEntity != null) {
             //查询活动关联的景点
             QueryWrapper<ActivityScenicEntity> activityScenicEntityQueryWrapper = new QueryWrapper<>();
             activityScenicEntityQueryWrapper.eq("activity_id", id);
             List<ActivityScenicEntity> activityScenicEntities = activityScenicMapper.selectList(activityScenicEntityQueryWrapper);
-            if(activityScenicEntities.size()>0){
+            if (activityScenicEntities.size() > 0) {
                 List<ScenicEntity> scenicEntities = new ArrayList<>();
-                for(ActivityScenicEntity activityScenicEntity : activityScenicEntities){
+                for (ActivityScenicEntity activityScenicEntity : activityScenicEntities) {
                     ScenicEntity scenicEntity = scenicService.getScenicById(activityScenicEntity.getScenicId());
+                    if (scenicEntity != null) {
+                        //查询景点打卡人次
+                        QueryWrapper<ScenicAchievementEntity> queryWrapper = new QueryWrapper<>();
+                        queryWrapper.eq("scenic_id", scenicEntity.getId());
+                        int count = scenicAchievementMapper.selectCount(queryWrapper);
+                        scenicEntity.setFinishNum(count);
+                    }
                     scenicEntities.add(scenicEntity);
                 }
                 activityEntity.setScenicEntities(scenicEntities);
@@ -131,13 +144,13 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, ActivityEnt
             Date dateBegin = Utils.strToDate(activityEntity.getBeginDate(), "yyyy-MM-dd");
             Date dateExpiration = Utils.strToDate(activityEntity.getExpirationDate(), "yyyy-MM-dd");
             Date dateNow = Utils.strToDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), "yyyy-MM-dd");
-            if (dateBegin.compareTo(dateNow)>0) {
+            if (dateBegin.compareTo(dateNow) > 0) {
                 activityEntity.setIsOpenning(ConstDefine.ACTIVITY_WAIT);
-            }else if (dateBegin.compareTo(dateNow)<=0 && dateExpiration.compareTo(dateNow)>=0){
+            } else if (dateBegin.compareTo(dateNow) <= 0 && dateExpiration.compareTo(dateNow) >= 0) {
                 activityEntity.setIsOpenning(ConstDefine.ACTIVITY_OPENNING);
-            }else if (dateExpiration.compareTo(dateNow)<0){
+            } else if (dateExpiration.compareTo(dateNow) < 0) {
                 activityEntity.setIsOpenning(ConstDefine.ACTIVITY_END);
-            }else {
+            } else {
                 activityEntity.setIsOpenning(0);
             }
         }
