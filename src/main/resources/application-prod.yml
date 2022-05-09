@@ -58,7 +58,7 @@ mybatis-plus:
 #开关swagger
 swagger:
   is:
-    enable: true
+    enable: false
 
 upload:
   savepath: files/
