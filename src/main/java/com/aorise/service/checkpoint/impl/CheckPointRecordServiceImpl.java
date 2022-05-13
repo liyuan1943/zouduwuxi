@@ -99,23 +99,23 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
             for (CheckPointRecordEntity checkPointRecordEntity : entities) {
                 //查询线路
                 QueryWrapper<RouteCheckPointEntity> checkPointRecordEntityQueryWrapper = new QueryWrapper<>();
-                checkPointRecordEntityQueryWrapper.eq("scenic_id",checkPointRecordEntity.getScenicId());
-                checkPointRecordEntityQueryWrapper.eq("check_point_id",checkPointRecordEntity.getCheckPointId());
+                checkPointRecordEntityQueryWrapper.eq("scenic_id", checkPointRecordEntity.getScenicId());
+                checkPointRecordEntityQueryWrapper.eq("check_point_id", checkPointRecordEntity.getCheckPointId());
                 checkPointRecordEntityQueryWrapper.orderByAsc("no");
-                List<RouteCheckPointEntity> routeCheckPointEntities =routeCheckPointMapper.selectList(checkPointRecordEntityQueryWrapper);
-                if(routeCheckPointEntities.size()>0){
-                    StringBuilder route= new StringBuilder();
-                    for(RouteCheckPointEntity routeCheckPointEntity :routeCheckPointEntities){
+                List<RouteCheckPointEntity> routeCheckPointEntities = routeCheckPointMapper.selectList(checkPointRecordEntityQueryWrapper);
+                if (routeCheckPointEntities.size() > 0) {
+                    StringBuilder route = new StringBuilder();
+                    for (RouteCheckPointEntity routeCheckPointEntity : routeCheckPointEntities) {
                         RouteEntity routeEntity = routeMapper.selectById(routeCheckPointEntity.getRouteId());
-                        if(routeEntity!=null) {
+                        if (routeEntity != null) {
                             if (routeCheckPointEntity.getIsDestination().equals(ConstDefine.IS_YES)) {
                                 route.append(",").append(routeEntity.getName()).append("(终点)");
-                            }else {
+                            } else {
                                 route.append(",").append(routeEntity.getName()).append("(打卡点").append(routeCheckPointEntity.getNo()).append(")");
                             }
                         }
                     }
-                    if(StringUtils.isNotBlank(route.toString())){
+                    if (StringUtils.isNotBlank(route.toString())) {
                         route = new StringBuilder(route.substring(1));
                         checkPointRecordEntity.setRoute(route.toString());
                     }
@@ -152,6 +152,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
      */
     @Override
     public int addCheckPointRecord(CheckPointRecordEntity checkPointRecordEntity) {
+        int flag = 1;
         //查询该打卡点当天是否有打卡记录
         QueryWrapper<CheckPointRecordEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("check_point_id", checkPointRecordEntity.getCheckPointId());
@@ -214,11 +215,13 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
                     ScenicAchievementEntity scenicAchievementEntity = new ScenicAchievementEntity();
                     scenicAchievementEntity.setMemberId(checkPointRecordEntity.getMemberId());
                     scenicAchievementEntity.setScenicId(checkPointRecordEntity.getScenicId());
-                    scenicAchievementEntity.setYear(checkPointRecordEntity.getCheckTime().substring(0,4));
+                    scenicAchievementEntity.setYear(checkPointRecordEntity.getCheckTime().substring(0, 4));
                     int iRet = scenicAchievementMapper.insert(scenicAchievementEntity);
                     if (iRet <= 0) {
                         throw new ServiceException("新增景点成就失败");
                     }
+                    flag = 2;
+
                     //判断是否要新增活动成就表数据
                     //查询包含这个景点的所有活动
                     QueryWrapper<ActivityScenicEntity> activityScenicEntityQueryWrapper = new QueryWrapper<>();
@@ -264,7 +267,7 @@ public class CheckPointRecordServiceImpl extends ServiceImpl<CheckPointRecordMap
             throw new ServiceException("该打卡点今天已有打卡记录。如需打卡请在【我的足迹】中删除原打卡记录");
         }
 
-        return 1;
+        return flag;
     }
 
 }

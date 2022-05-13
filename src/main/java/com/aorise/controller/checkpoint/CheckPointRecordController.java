@@ -1,7 +1,6 @@
 package com.aorise.controller.checkpoint;
 
 import com.aorise.model.checkpoint.CheckPointRecordEntity;
-import com.aorise.model.medal.MedalEntity;
 import com.aorise.service.checkpoint.CheckPointRecordService;
 import com.aorise.utils.StatusDefine;
 import com.aorise.utils.StatusDefineMessage;
@@ -18,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,14 +73,16 @@ public class CheckPointRecordController {
      * 方法返回类型：String
      */
     @ApiOperation(value = "新增打卡记录", notes = "新增打卡记录", produces = "application/json")
-    @RequestMapping(value = "/api/scenic/addCheckPointRecord", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/checkPointRecord/addCheckPointRecord", method = RequestMethod.POST)
     public String addCheckPointRecord(@RequestBody @Validated CheckPointRecordEntity checkPointRecordEntity) {
         logger.debug("Request RESTful API:addCheckPointRecord");
         logger.debug("checkPointRecordEntity：" + checkPointRecordEntity);
 
         int iRet = checkPointRecordService.addCheckPointRecord(checkPointRecordEntity);
-        if (iRet > 0) {
-            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", checkPointRecordEntity.getId()).toString();
+        if (iRet ==1) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", "").toString();
+        }if (iRet ==2) {
+            return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "本条路线已打卡完成。", checkPointRecordEntity.getId()).toString();
         } else {
             return new JsonResponseData(false, StatusDefineMessage.getMessage(StatusDefine.FAILURE), StatusDefine.FAILURE, "", "").toString();
         }

@@ -93,9 +93,22 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         //接口
         excludePath.add("/api/login");
+        excludePath.add("/api/logout");
         excludePath.add("/api/403");
         excludePath.add("/api/fileUpload/**");
         excludePath.add("/api/wechatUser/**");
+        excludePath.add("/api/scenic/**");
+        excludePath.add("/api/activity/**");
+        excludePath.add("/api/news/**");
+        excludePath.add("/api/question");
+        excludePath.add("/api/checkPoint/**");
+        excludePath.add("/api/checkPointRecord/pageIndex/**");
+        excludePath.add("/api/member/**");
+        excludePath.add("/api/route");
+        excludePath.add("/api/message/pageIndex/**");
+        excludePath.add("/api/banner/**");
+        excludePath.add("/api/config");
+
 
         //swagger
         excludePath.add("/swagger-ui.html");
