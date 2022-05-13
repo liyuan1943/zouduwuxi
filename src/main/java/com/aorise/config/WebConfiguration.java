@@ -105,6 +105,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         excludePath.add("/api/checkPointRecord/pageIndex/**");
         excludePath.add("/api/member/**");
         excludePath.add("/api/route");
+        excludePath.add("/api/message");
         excludePath.add("/api/message/pageIndex/**");
         excludePath.add("/api/banner/**");
         excludePath.add("/api/config");
