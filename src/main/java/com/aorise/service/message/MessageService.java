@@ -33,7 +33,7 @@ public interface MessageService extends IService<MessageEntity> {
      * @date  Created in 2018/9/20 9:27
      * @modified By:
      */
-    int addMessage(MessageEntity messageEntity);
+    int addMessage(MessageEntity messageEntity, HttpServletRequest request);
 
     /**
      * 删除留言

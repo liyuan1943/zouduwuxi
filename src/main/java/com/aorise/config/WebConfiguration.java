@@ -95,7 +95,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         excludePath.add("/api/login");
         excludePath.add("/api/logout");
         excludePath.add("/api/403");
-        excludePath.add("/api/fileUpload/**");
+        excludePath.add("/api/upload/UploadImg");
         excludePath.add("/api/wechatUser/**");
         excludePath.add("/api/scenic/**");
         excludePath.add("/api/activity/**");

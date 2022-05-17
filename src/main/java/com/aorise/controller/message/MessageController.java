@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.Data;
 import java.util.Date;
 
 /**
@@ -86,11 +85,12 @@ public class MessageController {
      */
     @ApiOperation(value = "新增留言信息", notes = "新增留言信息", produces = "application/json")
     @RequestMapping(value = "/api/message", method = RequestMethod.POST)
-    public String addMessage(@RequestBody @Validated MessageEntity messageEntity) {
+    public String addMessage(@RequestBody @Validated MessageEntity messageEntity,
+                             HttpServletRequest request) {
         logger.debug("Request RESTful API:addMessage");
         logger.debug("message：" + messageEntity);
 
-        int bol = messageService.addMessage(messageEntity);
+        int bol = messageService.addMessage(messageEntity,request);
         if (bol > 0) {
             return new JsonResponseData(true, StatusDefineMessage.getMessage(StatusDefine.SUCCESS), StatusDefine.SUCCESS, "", messageEntity.getId()).toString();
         } else {

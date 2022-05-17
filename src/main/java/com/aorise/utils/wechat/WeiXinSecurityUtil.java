@@ -1,6 +1,7 @@
 package com.aorise.utils.wechat;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -12,8 +13,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
@@ -33,22 +36,18 @@ public class WeiXinSecurityUtil {
      */
     private static String IMG_SEC_URL = "https://api.weixin.qq.com/wxa/img_sec_check?access_token=";
 
+
     /**
      * 小程序验证文字是否违规.
      * 创建时间 2021年12月3日 下午2:12:29
-     * @author yulu
-     * @param openid	用户id
-     * @param txt		文字内容
+     *
+     * @param token token
+     * @param txt   文字内容
      * @return true 不违规
+     * @author yulu
      */
-    public static boolean securityMsgSecCheck(String openid, String txt) {
-        if (IsNullUtil.strsIsNull(openid, txt)) {
-            return false;
-        }
-
-        String token = getToken();
-        if (token == null) {
-            log.error("检查一段文本是否含有违法违规内容失败,无法获取到token");
+    public static boolean securityMsgSecCheck(String token, String txt) {
+        if (StringUtils.isBlank(txt)) {
             return false;
         }
 
@@ -62,31 +61,34 @@ public class WeiXinSecurityUtil {
             huc.setDoOutput(true);
 
             JSONObject param = new JSONObject();
-            param.put("version", "2");
-            param.put("openid", openid);
-            param.put("scene", "1");
             param.put("content", txt);
             huc.getOutputStream().write(param.toString().getBytes());
 
-            String data = new String(String.valueOf(huc.getInputStream().read()));
-            JSONObject result = (JSONObject) JSONObject.parse(data);
-            String errcode = String.valueOf(result.get("errcode"));
-            String errmsg = (String) result.get("errmsg");
-            if (!"0".equals(errcode)) {
-                log.error("小程序检测文字是否违规失败: ".concat(result.toJSONString()));
-                return false;
-            } else {
-                JSONObject r = result.getJSONObject("result");
-                if ("pass".equals(r.getString("suggest"))) {
-                    return true;
-                } else {
-                    log.error("小程序检测文字结果违规,文字=%s, result=%s", txt, result);
-                    return false;
-                }
+            InputStream inputStream = huc.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf-8");
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String str = null;
+            StringBuffer buffer = new StringBuffer();
+            while ((str = bufferedReader.readLine()) != null) {
+                buffer.append(str);
             }
-        } catch (IOException e) {
+            bufferedReader.close();
+            inputStreamReader.close();
+            // 释放资源
+            inputStream.close();
+            JSONObject result = (JSONObject) JSONObject.parse(buffer.toString());
+
+            String errcode = String.valueOf(result.get("errcode"));
+            if (!"0".equals(errcode)) {
+                log.error("文字含有违法违规内容: ".concat(txt));
+                return false;
+            }
+            return true;
+
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error("小程序检测文字是否违规失败失败: %s", e.getMessage());
+            log.error("小程序检测文字是否违规失败: %s", e.getMessage());
         } finally {
             if (huc != null) {
                 huc.disconnect();
@@ -99,42 +101,41 @@ public class WeiXinSecurityUtil {
     /**
      * 小程序验证图片是否违规.
      * 创建时间 2021年12月3日 下午5:11:42
-     * @author yulu
-     * @param path 图片路径
+     *
+     * @param file 图片
      * @return true不违规
+     * @author yulu
      */
-    public static boolean securityImgSecCheck(String path) {
-        if (path == null) {
+    public static boolean securityImgSecCheck(String token, File file) {
+        if (file == null) {
             return false;
         }
+        try {
+            RestTemplate http = new RestTemplate();
 
-        String token = getToken();
-        if (token == null) {
-            log.error("检查图片是否含有违法违规内容失败,无法获取到token");
-            return false;
-        }
+            HttpHeaders heads = new HttpHeaders();
+            heads.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        RestTemplate http = new RestTemplate();
+            MultiValueMap<String, Object> param = new LinkedMultiValueMap<>();
+            // 这个地方只能使用 FileSystemResource 的形式,我直接用 byte[] 的话,接口给我返回的 47001 参数错误
+            param.add("media", new FileSystemResource(file));
 
-        HttpHeaders heads = new HttpHeaders();
-        heads.setContentType(MediaType.MULTIPART_FORM_DATA);
+            HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(param, heads);
+            String data = http.postForObject(IMG_SEC_URL + token, entity, String.class);
 
-        MultiValueMap<String, Object> param = new LinkedMultiValueMap<>();
-        // 这个地方只能使用 FileSystemResource 的形式,我直接用 byte[] 的话,接口给我返回的 47001 参数错误
-        param.add("media", new FileSystemResource(new File(path)));
+            JSONObject result = (JSONObject) JSONObject.parse(data);
+            System.out.println(result);
 
-        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(param, heads);
-        String data = http.postForObject(IMG_SEC_URL + token, entity, String.class);
-
-        JSONObject result = (JSONObject) JSONObject.parse(data);
-        System.out.println(result);
-
-        String errcode = String.valueOf(result.get("errcode"));
-        String errmsg = (String) result.get("errmsg");
-        if (!"0".equals(errcode)) {
-            return false;
-        } else {
+            String errcode = String.valueOf(result.get("errcode"));
+            if (!"0".equals(errcode)) {
+                log.error("图片含有违法违规内容: ".concat(file.getPath()));
+                return false;
+            }
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("小程序检测图片是否违规失败: %s", e.getMessage());
         }
+        return false;
     }
 }
